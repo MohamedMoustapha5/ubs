@@ -1,0 +1,137 @@
+.responsive-logo {
+  max-width: 80%; /* Le logo ne dépassera jamais la largeur de son conteneur */
+  max-height: 80%; /* Le logo ne dépassera jamais la hauteur de son conteneur */
+  height: auto;     /* Préserve les proportions de l'image */
+  display: block;   /* Supprime les espaces inutiles autour de l'image */
+  margin-left: 0px;
+}
+
+/*  Ajuster la hauteur du header si nécessaire.  Exemple : */
+.site-navbar {
+  height: 80px; /* Ou une valeur plus appropriée à votre design */
+}
+
+.fixed-form {
+  display: flex;
+  justify-content: space-between; /* Better spacing */
+  align-items: center; /* Vertically center items */
+}
+
+.fixed-form div {
+  flex: 1; /* Takes available space */
+  text-align: left;
+  margin-right: 1rem; /* Adjust spacing as needed */
+}
+
+.fixed-form h2 {
+  font-size: 1.5rem; /* Adjust size as needed */
+  margin-bottom: 0.5rem;
+}
+
+.fixed-form p {
+  font-size: 1rem;
+  color: #555; /* Slightly darker gray */
+}
+
+.btn {
+  background-color: #FF3131; /* Red button */
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  border: none;
+  font-size: 1rem; /* Adjust size as needed */
+  cursor: pointer;
+}
+
+.btn:hover {
+  background-color: #CC2828; /* Darker red on hover */
+}
+   
+   /* CSS pour désactiver le défilement */
+    .no-scroll {
+        overflow: hidden; /* Désactive le défilement */
+      }
+  
+      .slide .fixed-form {
+        position: relative; /* Positionné relativement pour être en bas de chaque slide */
+        margin-top: 20px; /* Espace au-dessus du formulaire */
+        text-align: center; /* Centrer le texte à l'intérieur du formulaire */
+      }
+  
+      /* Responsive Styles */
+      .slide h1 {
+        margin-top: 20px; /* Marge en haut du h1 */
+        text-align: center; /* Centrage dau texte */
+      }
+  
+      .slide p {
+        margin-bottom: 0.5rem; /* Réduisez l'espace entre les paragraphes */
+        text-align: center; /* Centrage du texte */
+      }
+  
+      @media (max-width: 768px) {
+        .slide h1 {
+          font-size: 1.5rem; /* Taille ajustée pour les petits écrans */
+        }
+  
+        .slide p {
+          font-size: 0.75rem; /* Taille réduite pour les petits écrans */
+        }
+  
+        .slide .fixed-form {
+          margin-top: 15px; /* Ajustement de l'espace au-dessus du formulaire sur petits écrans */
+          width: 90%; /* Largeur du formulaire pour les petits écrans */
+          max-width: 350px; /* Largeur maximale pour s'assurer que le formulaire ne soit pas trop large */
+        }
+  
+        .slide input[type="text"] {
+          padding: 8px; /* Réduction de la taille du champ d'entrée */
+          width: 100%; /* Champ d'entrée prend toute la largeur du formulaire */
+          box-sizing: border-box; /* Inclut le padding dans la largeur totale */
+        }
+  
+        .slide .btn {
+          padding: 8px 16px; /* Ajustement de la taille du bouton */
+          width: auto; /* Laisser le bouton s'ajuster automatiquement */
+        }
+      }
+  
+      .site-footer {
+        background-color: #f8f9fa; /* Couleur de fond du footer */
+        padding: 40px 0; /* Ajout de padding */
+      }
+      
+      .footer-heading {
+        font-size: 1.5rem; /* Taille du titre */
+        margin-bottom: 20px; /* Marge inférieure */
+        color: #333; /* Couleur du texte */
+      }
+      
+      .social-icons {
+        margin-top: 15px; /* Marge supérieure pour les icônes */
+      }
+      
+      .social-icon {
+        display: inline-block; /* Affichage en ligne */
+        margin: 0 10px; /* Espacement entre les icônes */
+        color: #333; /* Couleur des icônes */
+        font-size: 1.5rem; /* Taille des icônes */
+        transition: color 0.3s; /* Transition pour l'effet de survol */
+      }
+      
+      .social-icon:hover {
+        color: #FF3131; /* Couleur au survol */
+      }
+      
+      .whatsapp-icon {
+        color: #25D366; /* Couleur de l'icône WhatsApp */
+        font-size: 1.2rem; /* Taille de l'icône WhatsApp */
+        text-decoration: none; /* Supprimer le soulignement */
+      }
+      
+      .whatsapp-icon:hover {
+        text-decoration: underline; /* Souligné au survol */
+      }
+
+
+
