@@ -44,57 +44,61 @@ $pdf->SetAutoPageBreak(TRUE, 15);
 $pdf->AddPage();
 
 // ==============================================
-// EN-TÊTE AVEC LOGO ET PAYS
+// EN-TÊTE AVEC LOGO ET STYLE PROFESSIONNEL
 // ==============================================
+$pdf->SetDrawColor(180, 180, 180);
+$pdf->SetFillColor(245, 245, 245);
+$pdf->SetTextColor(0, 0, 0);
 
 // Logo à gauche
 $logo_file = 'images/logo.png';
 if (file_exists($logo_file)) {
-    $pdf->Image($logo_file, 15, 10, 50, 0, 'PNG', '', 'T', false, 300, '', false, false, 0, false, false, false);
+    $pdf->Image($logo_file, 15, 12, 50, 0, 'PNG', '', 'T', false, 300, '', false, false, 0, false, false, false);
+    $pdf->SetXY(15, 30);
 } else {
-    // Si le logo n'existe pas, afficher le nom de la banque
     $pdf->SetFont('helvetica', 'B', 16);
-    $pdf->SetXY(15, 15);
-    $pdf->Cell(0, 10, 'UBS BANK', 0, 1, 'L');
+    $pdf->SetXY(15, 18);
+    $pdf->Cell(0, 8, 'UBS BANK', 0, 1, 'L');
+    $pdf->SetXY(15, 28);
 }
 
-// Pays de l'expéditeur en dessous du logo
-$pdf->SetFont('helvetica', '', 11);
-$pdf->SetXY(15, 35); // Position sous le logo
-$pdf->Cell(0, 6, $virement['expediteur_pays'], 0, 1, 'L');
+$pdf->SetFont('helvetica', '', 10);
+$pdf->Cell(0, 5, $virement['expediteur_pays'], 0, 1, 'L');
 
-// Ligne de séparation sous l'en-tête
-$pdf->Line(15, 45, 195, 45);
-$pdf->Ln(15); // Saut de ligne après la ligne
+// Informations document
+$pdf->SetFont('helvetica', 'B', 10);
+$pdf->SetXY(115, 15);
+$pdf->Cell(0, 6, 'ORDRE DE VIREMENT', 0, 1, 'R');
+$pdf->SetFont('helvetica', '', 9);
+$pdf->SetXY(115, 22);
+$pdf->Cell(0, 5, 'Document professionnel', 0, 1, 'R');
+$pdf->SetXY(115, 28);
+$pdf->Cell(0, 5, 'Date : '.date('d/m/Y', strtotime($virement['date_creation'])), 0, 1, 'R');
+$pdf->SetXY(115, 33);
+$pdf->Cell(0, 5, 'Référence : '.$virement['code_swift'], 0, 1, 'R');
+
+// Ligne de séparation
+$pdf->Line(15, 42, 195, 42);
+$pdf->Ln(12);
 
 // ==============================================
-// TITRE
+// TITRE PRINCIPAL
 // ==============================================
-$pdf->SetFont('helvetica', 'B', 18);
+$pdf->SetFont('helvetica', 'B', 16);
 $pdf->Cell(0, 8, 'ORDRE DE VIREMENT INTERNATIONAL', 0, 1, 'C');
 $pdf->SetFont('helvetica', 'I', 9);
-$pdf->Cell(0, 4, 'International Transfer Order', 0, 1, 'C');
-$pdf->Ln(8);
-
-// ==============================================
-// RÉFÉRENCE ET DATE
-// ==============================================
-$pdf->SetFont('helvetica', '', 10);
-$pdf->Cell(50, 6, 'Référence SWIFT / SWIFT Ref:', 0, 0, 'L');
-$pdf->SetFont('helvetica', 'B', 10);
-$pdf->Cell(60, 6, $virement['code_swift'], 0, 0, 'L');
-
-$pdf->SetFont('helvetica', '', 10);
-$pdf->Cell(45, 6, "Date d'émission / Issue date:", 0, 0, 'L');
-$pdf->SetFont('helvetica', 'B', 10);
-$pdf->Cell(0, 6, date('d/m/Y', strtotime($virement['date_creation'])), 0, 1, 'L');
-$pdf->Ln(5);
+$pdf->Cell(0, 5, 'International Transfer Order', 0, 1, 'C');
+$pdf->Ln(10);
 
 // ==============================================
 // SECTION 1 - BANQUE ÉMETTRICE
 // ==============================================
-$pdf->SetFont('helvetica', 'B', 11);
-$pdf->Cell(0, 6, '1. Informations de la banque émettrice (Ordering Institution)', 0, 1, 'L');
+$pdf->SetFillColor(230, 230, 230);
+$pdf->SetFont('helvetica', 'B', 10);
+$pdf->Cell(0, 7, '1. Informations de la banque émettrice', 0, 1, 'L', 1);
+$pdf->SetFont('helvetica', '', 10);
+$pdf->SetFillColor(255, 255, 255);
+
 $pdf->SetFont('helvetica', '', 10);
 
 $pdf->Cell(55, 6, '   Banque / Bank:', 0, 0, 'L');
