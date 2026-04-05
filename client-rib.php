@@ -37,7 +37,7 @@ try {
             $swift_code,
             'UBS Bank USA',
             '1285 Avenue of the Americas, New York, NY 10019, USA',
-            strtoupper($_SESSION['user_prenom'] . ' ' . $_SESSION['user_nom']),
+            strtoupper(($_SESSION['user_prenom'] ?? '') . ' ' . ($_SESSION['user_nom'] ?? '')),
             'USA'
         ]);
         
@@ -310,7 +310,7 @@ $client = $stmt->fetch();
             </a>
             <div class="navbar-nav ml-auto d-flex flex-row align-items-center">
                 <span class="navbar-text mr-3">
-                    <i class="fas fa-user-circle"></i> <?= htmlspecialchars($_SESSION['user_prenom'] . ' ' . $_SESSION['user_nom']) ?>
+                    <i class="fas fa-user-circle"></i> <?= htmlspecialchars(($_SESSION['user_prenom'] ?? '') . ' ' . ($_SESSION['user_nom'] ?? '')) ?>
                 </span>
                 <a href="dashboard.php" class="btn btn-primary btn-sm mr-2">
                     <i class="fas fa-tachometer-alt"></i> Tableau de bord

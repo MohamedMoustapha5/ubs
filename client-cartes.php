@@ -487,7 +487,7 @@ function masquerNumero($numero) {
             </a>
             <div class="navbar-nav ml-auto d-flex flex-row align-items-center">
                 <span class="navbar-text mr-3">
-                    <i class="fas fa-user-circle"></i> <?= htmlspecialchars($_SESSION['user_prenom'] . ' ' . $_SESSION['user_nom']) ?>
+                    <i class="fas fa-user-circle"></i> <?= htmlspecialchars(($_SESSION['user_prenom'] ?? '') . ' ' . ($_SESSION['user_nom'] ?? '')) ?>
                 </span>
                 <a href="dashboard.php" class="btn btn-primary btn-sm mr-2">
                     <i class="fas fa-tachometer-alt"></i> Tableau de bord
