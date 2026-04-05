@@ -1,5 +1,6 @@
 <?php
-session_start();
+// Initialiser la langue
+require_once 'init_lang.php';
 
 // Vérifier si l'utilisateur est connecté
 $est_connecte = isset($_SESSION['user_id']);
@@ -27,6 +28,7 @@ $user_prenom = $_SESSION['user_prenom'] ?? '';
      <link rel="shortcut icon" href="../images/favicon.png">
 
     <link rel="stylesheet" href="css/jquery.fancybox.min.css">
+    <link rel="stylesheet" href="css/lang-switcher.css">
 
     <link rel="stylesheet" href="css/bootstrap-datepicker.css">
 
@@ -115,40 +117,48 @@ $user_prenom = $_SESSION['user_prenom'] ?? '';
                 <!-- Menu desktop horizontal -->
                 <nav class="site-navigation position-relative text-right d-none d-xl-block" role="navigation">
                     <ul class="site-menu main-menu d-flex justify-content-end" style="list-style: none; margin: 0; padding: 0;">
-                        <li style="margin-left: 30px;"><a href="#home-section" class="nav-link" style="color: #000; text-decoration: none; font-weight: 500; padding: 20px 0; display: block;">Accueil</a></li>
+                        <li style="margin-left: 30px;"><a href="#home-section" class="nav-link" style="color: #000; text-decoration: none; font-weight: 500; padding: 20px 0; display: block;"><?= trans('accueil') ?></a></li>
                         
                         <?php if ($est_connecte): ?>
     <li style="margin-left: 30px; position: relative;" class="has-children">
-        <a href="#" class="nav-link">Bonjour <?= htmlspecialchars($user_prenom) ?></a>
+        <a href="#" class="nav-link"><?= trans('bonjour') ?> <?= htmlspecialchars($user_prenom) ?></a>
         <ul class="dropdown" style="position: absolute; top: 100%; left: 0; background: white; box-shadow: 0 5px 15px rgba(0,0,0,0.1); min-width: 200px; padding: 10px 0; display: none; list-style: none; z-index: 1000;">
-            <li><a href="dashboard.php" style="color: #333; text-decoration: none; padding: 10px 20px; display: block;">Mon compte</a></li>
-            <li><a href="client-cartes.php" style="color: #333; text-decoration: none; padding: 10px 20px; display: block;">Mes cartes</a></li>  <!-- ✅ NOUVEAU -->
-            <li><a href="verification.php" style="color: #333; text-decoration: none; padding: 10px 20px; display: block;">Vérifier statut</a></li>
+            <li><a href="dashboard.php" style="color: #333; text-decoration: none; padding: 10px 20px; display: block;"><?= trans('mon_compte') ?></a></li>
+            <li><a href="client-cartes.php" style="color: #333; text-decoration: none; padding: 10px 20px; display: block;">Mes cartes</a></li>
+            <li><a href="verification.php" style="color: #333; text-decoration: none; padding: 10px 20px; display: block;"><?= trans('verifier_statut') ?></a></li>
             <li><a href="client-rib.php" style="color: #333; text-decoration: none; padding: 10px 20px; display: block;">Mon RIB</a></li>
-            <li><a href="logout.php" style="color: #FF3131; text-decoration: none; padding: 10px 20px; display: block;">Déconnexion</a></li>
+            <li><a href="logout.php" style="color: #FF3131; text-decoration: none; padding: 10px 20px; display: block;"><?= trans('deconnexion') ?></a></li>
         </ul>
     </li>
 <?php else: ?>
                             <li style="margin-left: 30px; position: relative;" class="has-children">
-                                 <a href="#about-section" class="nav-link">Espace client <span style="margin-left: 8px;"></span></a>
+                                 <a href="#about-section" class="nav-link"><?= trans('espace_client') ?> <span style="margin-left: 8px;"></span></a>
                                 <ul class="dropdown" style="position: absolute; top: 100%; left: 0; background: white; box-shadow: 0 5px 15px rgba(0,0,0,0.1); min-width: 200px; padding: 10px 0; display: none; list-style: none; z-index: 1000;">
-                                    <li><a href="login.php" style="color: #333; text-decoration: none; padding: 10px 20px; display: block;">Connexion</a></li>
-                                    <li><a href="register.php" style="color: #333; text-decoration: none; padding: 10px 20px; display: block;">Inscription</a></li>
+                                    <li><a href="login.php" style="color: #333; text-decoration: none; padding: 10px 20px; display: block;"><?= trans('connexion') ?></a></li>
+                                    <li><a href="register.php" style="color: #333; text-decoration: none; padding: 10px 20px; display: block;"><?= trans('inscription') ?></a></li>
                                 </ul>
                             </li>
                         <?php endif; ?>
 
                         <li style="margin-left: 30px; position: relative;" class="has-children">
-                            <a href="#about-section" class="nav-link">À propos <span style="margin-left: 8px;"></span></a>
+                            <a href="#about-section" class="nav-link"><?= trans('a_propos') ?> <span style="margin-left: 8px;"></span></a>
                             <ul class="dropdown" style="position: absolute; top: 100%; left: 0; background: white; box-shadow: 0 5px 15px rgba(0,0,0,0.1); min-width: 200px; padding: 10px 0; display: none; list-style: none; z-index: 1000;">
-                                <li><a href="#faq-section" style="color: #333; text-decoration: none; padding: 10px 20px; display: block;">FAQ</a></li>
-                                <li><a href="#services-section" style="color: #333; text-decoration: none; padding: 10px 20px; display: block;">Services</a></li>
-                                <li><a href="#testimonials-section" style="color: #333; text-decoration: none; padding: 10px 20px; display: block;">Témoignages</a></li>
+                                <li><a href="#faq-section" style="color: #333; text-decoration: none; padding: 10px 20px; display: block;"><?= trans('faq') ?></a></li>
+                                <li><a href="#services-section" style="color: #333; text-decoration: none; padding: 10px 20px; display: block;"><?= trans('services') ?></a></li>
+                                <li><a href="#testimonials-section" style="color: #333; text-decoration: none; padding: 10px 20px; display: block;"><?= trans('temoignages') ?></a></li>
                             </ul>
                         </li>
                         
-                        <li style="margin-left: 30px;"><a href="#contact-section" class="nav-link" style="color: #000; text-decoration: none; font-weight: 500; padding: 20px 0; display: block;">Contact</a></li>
-                        <li style="margin-left: 30px;"><a href="verification.php" class="nav-link" style="color: #000; text-decoration: none; font-weight: 500; padding: 20px 0; display: block;">Statut</a></li>
+                        <li style="margin-left: 30px;"><a href="#contact-section" class="nav-link" style="color: #000; text-decoration: none; font-weight: 500; padding: 20px 0; display: block;"><?= trans('contact') ?></a></li>
+                        <li style="margin-left: 30px;"><a href="verification.php" class="nav-link" style="color: #000; text-decoration: none; font-weight: 500; padding: 20px 0; display: block;"><?= trans('statut') ?></a></li>
+                        
+                        <!-- Sélecteur de langue -->
+                        <li style="margin-left: 30px; padding: 15px 0;">
+                            <div class="lang-switcher">
+                                <a href="?lang=fr" class="<?= ($_SESSION['lang'] ?? 'fr') === 'fr' ? 'active' : 'inactive' ?>" title="Français">🇫🇷 FR</a>
+                                <a href="?lang=en" class="<?= ($_SESSION['lang'] ?? 'fr') === 'en' ? 'active' : 'inactive' ?>" title="English">🇬🇧 EN</a>
+                            </div>
+                        </li>
                     </ul>
                 </nav>
                 
@@ -722,36 +732,44 @@ document.addEventListener('DOMContentLoaded', function() {
     if (mobileBody) {
         mobileBody.innerHTML = `
             <ul style="list-style: none; padding: 0;">
-                <li style="border-bottom: 1px solid #f0f0f0;"><a href="#home-section" style="display: block; padding: 15px; color: #333; text-decoration: none;">Accueil</a></li>
+                <li style="border-bottom: 1px solid #f0f0f0;"><a href="#home-section" style="display: block; padding: 15px; color: #333; text-decoration: none;"><?= trans('accueil') ?></a></li>
                 <li style="border-bottom: 1px solid #f0f0f0;">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <a href="#" style="display: block; padding: 15px; color: #333; text-decoration: none;"><?= $est_connecte ? 'Bonjour ' . htmlspecialchars($user_prenom) : 'Espace client' ?></a>
+                        <a href="#" style="display: block; padding: 15px; color: #333; text-decoration: none;"><?= $est_connecte ? trans('bonjour') . ' ' . htmlspecialchars($user_prenom) : trans('espace_client') ?></a>
                         <span style="padding: 15px; cursor: pointer;" class="mobile-arrow">▼</span>
                     </div>
                     <ul style="list-style: none; padding: 0; background: #f9f9f9; display: none;">
                         <?php if ($est_connecte): ?>
-                            <li><a href="dashboard.php" style="display: block; padding: 10px 30px; color: #333; text-decoration: none;">Mon compte</a></li>
-                            <li><a href="verification.php" style="display: block; padding: 10px 30px; color: #333; text-decoration: none;">Vérifier statut</a></li>
-                            <li><a href="logout.php" style="display: block; padding: 10px 30px; color: #FF3131; text-decoration: none;">Déconnexion</a></li>
+                            <li><a href="dashboard.php" style="display: block; padding: 10px 30px; color: #333; text-decoration: none;"><?= trans('mon_compte') ?></a></li>
+                            <li><a href="client-cartes.php" style="color: #333; text-decoration: none; padding: 10px 30px; display: block;"><?= trans('mes_cartes') ?></a></li>
+                            <li><a href="verification.php" style="display: block; padding: 10px 30px; color: #333; text-decoration: none;"><?= trans('verifier_statut') ?></a></li>
+                            <li><a href="client-rib.php" style="color: #333; text-decoration: none; padding: 10px 30px; display: block;"><?= trans('mon_rib') ?></a></li>
+                            <li><a href="logout.php" style="display: block; padding: 10px 30px; color: #FF3131; text-decoration: none;"><?= trans('deconnexion') ?></a></li>
                         <?php else: ?>
-                            <li><a href="login.php" style="display: block; padding: 10px 30px; color: #333; text-decoration: none;">Connexion</a></li>
-                            <li><a href="register.php" style="display: block; padding: 10px 30px; color: #333; text-decoration: none;">Inscription</a></li>
+                            <li><a href="login.php" style="display: block; padding: 10px 30px; color: #333; text-decoration: none;"><?= trans('connexion') ?></a></li>
+                            <li><a href="register.php" style="display: block; padding: 10px 30px; color: #333; text-decoration: none;"><?= trans('inscription') ?></a></li>
                         <?php endif; ?>
                     </ul>
                 </li>
                 <li style="border-bottom: 1px solid #f0f0f0;">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <a href="#" style="display: block; padding: 15px; color: #333; text-decoration: none;">À propos</a>
+                        <a href="#" style="display: block; padding: 15px; color: #333; text-decoration: none;"><?= trans('a_propos') ?></a>
                         <span style="padding: 15px; cursor: pointer;" class="mobile-arrow">▼</span>
                     </div>
                     <ul style="list-style: none; padding: 0; background: #f9f9f9; display: none;">
-                        <li><a href="#faq-section" style="display: block; padding: 10px 30px; color: #333; text-decoration: none;">FAQ</a></li>
-                        <li><a href="#services-section" style="display: block; padding: 10px 30px; color: #333; text-decoration: none;">Services</a></li>
-                        <li><a href="#testimonials-section" style="display: block; padding: 10px 30px; color: #333; text-decoration: none;">Témoignages</a></li>
+                        <li><a href="#faq-section" style="display: block; padding: 10px 30px; color: #333; text-decoration: none;"><?= trans('faq') ?></a></li>
+                        <li><a href="#services-section" style="display: block; padding: 10px 30px; color: #333; text-decoration: none;"><?= trans('services') ?></a></li>
+                        <li><a href="#testimonials-section" style="display: block; padding: 10px 30px; color: #333; text-decoration: none;"><?= trans('temoignages') ?></a></li>
                     </ul>
                 </li>
-                <li style="border-bottom: 1px solid #f0f0f0;"><a href="#contact-section" style="display: block; padding: 15px; color: #333; text-decoration: none;">Contact</a></li>
-                <li style="border-bottom: 1px solid #f0f0f0;"><a href="verification.php" style="display: block; padding: 15px; color: #333; text-decoration: none;">Statut</a></li>
+                <li style="border-bottom: 1px solid #f0f0f0;"><a href="#contact-section" style="display: block; padding: 15px; color: #333; text-decoration: none;"><?= trans('contact') ?></a></li>
+                <li style="border-bottom: 1px solid #f0f0f0;"><a href="verification.php" style="display: block; padding: 15px; color: #333; text-decoration: none;"><?= trans('statut') ?></a></li>
+                <li style="border-bottom: 1px solid #f0f0f0; padding: 15px;">
+                    <div class="lang-switcher" style="justify-content: flex-start;">
+                        <a href="?lang=fr" class="<?= ($_SESSION['lang'] ?? 'fr') === 'fr' ? 'active' : 'inactive' ?>" title="Français">🇫🇷 FR</a>
+                        <a href="?lang=en" class="<?= ($_SESSION['lang'] ?? 'fr') === 'en' ? 'active' : 'inactive' ?>" title="English">🇬🇧 EN</a>
+                    </div>
+                </li>
             </ul>
         `;
         

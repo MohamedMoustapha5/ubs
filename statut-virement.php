@@ -2,6 +2,7 @@
 // 🔐 DÉMARRER LA SESSION
 session_start();
 require_once 'config.php';
+require_once 'init_lang.php';
 
 // 🔐 VÉRIFICATION DE SÉCURITÉ
 if (!isset($_SESSION['authentifie']) || $_SESSION['authentifie'] !== true) {
@@ -277,101 +278,101 @@ $pourcentage = $virement['pourcentage'] ?? 95;
     </div>
     
     <div class="title-container">
-        <h2>Suivi du virement</h2>
+        <h2><?= trans('suivi_virement') ?></h2>
     </div>
     
-    <div class="msg">Cher client, veuillez lire attentivement votre suivi !!</div>
+    <div class="msg"><?= trans('cher_client') ?></div>
 
     <div class="progress-container">
         <div class="progress-bar-bg">
             <div class="progress-fill" id="progress-bar"></div>
         </div>
-        <div class="progress-text" id="progress-percentage">Virement en cours... 0%</div>
+        <div class="progress-text" id="progress-percentage"><?= trans('virement_en_cours') ?> 0%</div>
     </div>
 
     <div class="item">
-        <div class="title">Informations sur l'expéditeur</div>
-        <div class="subtitle">Informations personnelles</div>
+        <div class="title"><?= trans('informations_expediteur') ?></div>
+        <div class="subtitle"><?= trans('informations_personnelles') ?></div>
         <div class="info-row">
-            <p class="info-label">NOM:</p>
+            <p class="info-label"><?= trans('nom') ?>:</p>
             <p class="info-value"><strong><?= htmlspecialchars($virement['expediteur_nom']) ?></strong></p>
         </div>
         <div class="info-row">
-            <p class="info-label">PRÉNOM:</p>
+            <p class="info-label"><?= trans('prenom') ?>:</p>
             <p class="info-value"><strong><?= htmlspecialchars($virement['expediteur_prenom']) ?></strong></p>
         </div>
         <div class="info-row">
-            <p class="info-label">PAYS:</p>
+            <p class="info-label"><?= trans('pays') ?>:</p>
             <p class="info-value"><strong><?= htmlspecialchars($virement['expediteur_pays']) ?></strong></p>
         </div>
         
-        <div class="subtitle">Informations Bancaires</div>
+        <div class="subtitle"><?= trans('informations_bancaires') ?></div>
         <div class="info-row">
-            <p class="info-label">NUMERO ABA:</p>
+            <p class="info-label"><?= trans('numero_aba') ?>:</p>
             <p class="info-value"><strong><?= htmlspecialchars($virement['expediteur_numero_aba']) ?></strong></p>
         </div>
         <div class="info-row">
-            <p class="info-label">N° DE COMPTE:</p>
+            <p class="info-label"><?= trans('numero_compte') ?>:</p>
             <p class="info-value"><strong><?= htmlspecialchars($virement['expediteur_numero_compte']) ?></strong></p>
         </div>
         <div class="info-row">
-            <p class="info-label">NOM DE LA BANQUE:</p>
+            <p class="info-label"><?= trans('nom_banque') ?>:</p>
             <p class="info-value"><strong><?= htmlspecialchars($virement['expediteur_nom_banque']) ?></strong></p>
         </div>
         <div class="info-row">
-            <p class="info-label">BIC/SWIFT:</p>
+            <p class="info-label"><?= trans('bic_swift') ?>:</p>
             <p class="info-value"><strong><?= htmlspecialchars($virement['expediteur_bic'] ?? 'BKBCGB2L') ?></strong></p>
         </div>
     </div>
 
     <div class="item">
-        <div class="title">Informations sur le destinataire</div>
-        <div class="subtitle">Informations personnelles</div>
+        <div class="title"><?= trans('informations_destinataire') ?></div>
+        <div class="subtitle"><?= trans('informations_personnelles') ?></div>
         <div class="info-row">
-            <p class="info-label">NOM:</p>
+            <p class="info-label"><?= trans('nom') ?>:</p>
             <p class="info-value"><strong><?= htmlspecialchars($virement['destinataire_nom']) ?></strong></p>
         </div>
         <div class="info-row">
-            <p class="info-label">PRÉNOM:</p>
+            <p class="info-label"><?= trans('prenom') ?>:</p>
             <p class="info-value"><strong><?= htmlspecialchars($virement['destinataire_prenom']) ?></strong></p>
         </div>
         <div class="info-row">
-            <p class="info-label">PAYS:</p>
+            <p class="info-label"><?= trans('pays') ?>:</p>
             <p class="info-value"><strong><?= htmlspecialchars($virement['destinataire_pays']) ?></strong></p>
         </div>
         
-        <div class="subtitle">Informations Bancaires</div>
+        <div class="subtitle"><?= trans('informations_bancaires') ?></div>
         <div class="info-row">
-            <p class="info-label">CODE BANQUE:</p>
+            <p class="info-label"><?= trans('code_banque') ?>:</p>
             <p class="info-value"><strong><?= htmlspecialchars($virement['destinataire_code_banque']) ?></strong></p>
         </div>
         <div class="info-row">
-            <p class="info-label">CODE GUICHET:</p>
+            <p class="info-label"><?= trans('code_guichet') ?>:</p>
             <p class="info-value"><strong><?= htmlspecialchars($virement['destinataire_code_guichet']) ?></strong></p>
         </div>
         <div class="info-row">
-            <p class="info-label">N° DE COMPTE:</p>
+            <p class="info-label"><?= trans('numero_compte') ?>:</p>
             <p class="info-value"><strong><?= htmlspecialchars($virement['destinataire_numero_compte']) ?></strong></p>
         </div>
         <div class="info-row">
-            <p class="info-label">NOM DE LA BANQUE:</p>
+            <p class="info-label"><?= trans('nom_banque') ?>:</p>
             <p class="info-value"><strong><?= htmlspecialchars($virement['destinataire_nom_banque']) ?></strong></p>
         </div>
         <div class="info-row">
-            <p class="info-label">BIC/SWIFT:</p>
+            <p class="info-label"><?= trans('bic_swift') ?>:</p>
             <p class="info-value"><strong><?= htmlspecialchars($virement['destinataire_bic'] ?? 'UGABGALI') ?></strong></p>
         </div>
     </div>
 
     <div class="item">
-        <div class="title">Informations du virement</div>
+        <div class="title"><?= trans('informations_virement') ?></div>
 
         <div class="info-row">
-            <p class="info-label">Devise:</p>
+            <p class="info-label"><?= trans('devise_label') ?>:</p>
             <p class="info-value"><strong><?= htmlspecialchars($virement['devise']) ?></strong></p>
         </div>
 
-        <div class="subtitle">Montant</div>
+        <div class="subtitle"><?= trans('montant') ?></div>
         <div class="info-row">
             <p class="info-label">Avis de débit d'un montant de :</p>
             <p class="info-value"><strong><?= number_format($virement['montant'], 2) ?> <?= $virement['devise'] ?></strong></p>
@@ -382,11 +383,11 @@ $pourcentage = $virement['pourcentage'] ?? 95;
         </div>
         <p>Les détails de paiement supplémentaires sont indiqués ci-dessous.</p>
 
-        <div class="subtitle">Statut du virement</div>
+        <div class="subtitle"><?= trans('motif') ?></div>
         <p class="condi"><?= nl2br(htmlspecialchars($virement['motif'])) ?></p>
 
         <div class="contact">
-            <p>Contact (<strong>WhatsApp:</strong>):
+            <p><?= trans('contact_whatsapp') ?> (<strong>WhatsApp:</strong>):
                 <a href='https://wa.me/<?= preg_replace('/[^0-9]/', '', $virement['contact_whatsapp']) ?>' target='_blank'>
                     <?= htmlspecialchars($virement['contact_whatsapp']) ?>
                 </a>

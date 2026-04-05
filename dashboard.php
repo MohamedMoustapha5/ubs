@@ -1,5 +1,6 @@
 <?php
 require_once 'config.php';
+require_once 'init_lang.php';
 
 // Vérifier si l'utilisateur est connecté
 if (!isset($_SESSION['user_id'])) {

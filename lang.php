@@ -11,6 +11,8 @@ $lang['fr'] = [
     'connexion' => 'Connexion',
     'inscription' => 'Inscription',
     'mon_compte' => 'Mon compte',
+    'mes_cartes' => 'Mes cartes',
+    'mon_rib' => 'Mon RIB',
     'verifier_statut' => 'Vérifier statut',
     'deconnexion' => 'Déconnexion',
     'a_propos' => 'À propos',
@@ -59,9 +61,11 @@ $lang['fr'] = [
     // Vérification
     'verifiez_statut' => 'Vérifiez votre statut',
     'entrez_code_swift' => 'Veuillez entrer le code SWIFT reçu',
+    'placeholder_code' => 'Entrez le code SWIFT...',
     'saisissez_code' => 'Saisissez votre code reçu par Email',
     'verifier' => 'Vérifier',
     'code_incorrect' => 'code incorrect. Aucun accès au statut du virement.',
+    'erreur_verification' => 'Erreur de vérification.',
     
     // Statut virement
     'suivi_virement' => 'Suivi du virement',
@@ -89,6 +93,8 @@ $lang['en'] = [
     'connexion' => 'Login',
     'inscription' => 'Register',
     'mon_compte' => 'My account',
+    'mes_cartes' => 'My cards',
+    'mon_rib' => 'My RIB',
     'verifier_statut' => 'Check status',
     'deconnexion' => 'Logout',
     'a_propos' => 'About',
@@ -137,9 +143,11 @@ $lang['en'] = [
     // Vérification
     'verifiez_statut' => 'Check your status',
     'entrez_code_swift' => 'Please enter the SWIFT code received',
+    'placeholder_code' => 'Enter SWIFT code...',
     'saisissez_code' => 'Enter your code received by Email',
     'verifier' => 'Verify',
     'code_incorrect' => 'incorrect code. No access to transfer status.',
+    'erreur_verification' => 'Verification error.',
     
     // Statut virement
     'suivi_virement' => 'Transfer tracking',
@@ -153,6 +161,19 @@ $lang['en'] = [
     'devise' => 'Currency',
     'contact_whatsapp' => 'Contact (WhatsApp):',
     'menu' => 'Menu',
+    'nom' => 'NAME',
+    'prenom' => 'FIRST NAME',
+    'pays' => 'COUNTRY',
+    'numero_aba' => 'ABA NUMBER',
+    'numero_compte' => 'ACCOUNT #',
+    'nom_banque' => 'BANK NAME',
+    'bic_swift' => 'BIC/SWIFT',
+    'code_banque' => 'BANK CODE',
+    'code_guichet' => 'BRANCH CODE',
+    'montant' => 'Amount',
+    'devise_label' => 'Currency',
+    'statut' => 'Status',
+    'motif' => 'Purpose',
     
     // Langue
     'francais' => 'French',

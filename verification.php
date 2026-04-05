@@ -2,8 +2,9 @@
 // 🔐 Démarrer la session
 session_start();
 require_once 'config.php';
+require_once 'init_lang.php';
 
-$message = "Saisissez votre code reçu par Email";
+$message = trans('saisissez_code');
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $code = $_POST["code"];
@@ -23,10 +24,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             exit;
         } else {
             // ❌ Code incorrect
-            $message = "code incorrect. Aucun accès au statut du virement.";
+            $message = trans('code_incorrect');
         }
     } catch (Exception $e) {
-        $message = "Erreur de vérification.";
+        $message = trans('erreur_verification');
     }
 }
 ?>
@@ -40,8 +41,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <body>
 
 <div class="container">
-    <h1>Vérifiez votre statut</h1>
-    <p>Veuillez entrer le code SWIFT reçu.</p>
+    <h1><?= trans('verifiez_statut') ?></h1>
+    <p><?= trans('entrez_code_swift') ?></p>
 
     <?php if (!empty($message)) : ?>
         <p style="color:red; font-weight:bold;"><?= $message ?></p>
@@ -49,9 +50,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     <form method="POST">
         <input type="text" class="form-control" name="code"
-               placeholder="Entrez le code SWIFT..." required>
+               placeholder="<?= trans('placeholder_code') ?>" required>
 
-        <button type="submit" class="btn-verifier">Vérifier</button>
+        <button type="submit" class="btn-verifier"><?= trans('verifier') ?></button>
     </form>
 </div>
 
