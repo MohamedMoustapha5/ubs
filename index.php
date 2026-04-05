@@ -1,3 +1,12 @@
+<?php
+session_start();
+
+// Vérifier si l'utilisateur est connecté
+$est_connecte = isset($_SESSION['user_id']);
+$user_prenom = $_SESSION['user_prenom'] ?? '';
+
+?>
+
 <!doctype html>
 <html lang="en">
   <head>
@@ -27,7 +36,51 @@
     <link rel="stylesheet" href="css/index.css">
 
     <link rel="stylesheet" href="css/style.css">
+
+    <style>
+/* Style pour les dropdowns au survol */
+.has-children:hover .dropdown {
+    display: block !important;
+}
+
+.dropdown li a:hover {
+    background-color: #f8f8f8;
+    padding-left: 25px !important;
+    transition: all 0.3s;
+}
+
+.site-menu > li > a:hover {
+    color: #FF3131 !important;
+}
+
+/* Menu mobile actif */
+.site-mobile-menu.active {
+    right: 0 !important;
+}
+
+.site-mobile-menu-overlay.active {
+    display: block !important;
+}
+
+/* Responsive */
+@media (max-width: 1199px) {
+    .d-none.d-xl-block {
+        display: none !important;
+    }
     
+    .d-inline-block.d-xl-none {
+        display: inline-block !important;
+    }
+}
+
+@media (min-width: 1200px) {
+    .site-mobile-menu,
+    .site-mobile-menu-overlay {
+        display: none !important;
+    }
+}
+</style>
+ 
   </head>
   <body data-spy="scroll" data-target=".site-navbar-target" data-offset="300">
   
@@ -52,36 +105,74 @@
     </div>
    
     
-    <header class="site-navbar js-sticky-header site-navbar-target" role="banner">
-      <div class="container">
+   <header class="site-navbar js-sticky-header site-navbar-target" role="banner">
+    <div class="container">
         <div class="row align-items-center">
-          <div class="col-6 col-xl-2">
-          <img src="images/logo.png" alt="logo" class="responsive-logo">
-          <!-- <h1 class="mb-0 site-logo"><a href="index.html" class="h5 mb-0"><span style="color: #FF3131;">US</span>Bank<span class="text-primary">.</span></a></h1> -->
-          </div>
-          <div class="col-12 col-md-10 d-none d-xl-block">
-            <nav class="site-navigation position-relative text-right" role="navigation">
-              <ul class="site-menu main-menu js-clone-nav mr-auto d-none d-lg-block">
-                <li><a href="#home-section" class="nav-link">Accueil</a></li>
-                <li class="has-children">
-                  <a href="#about-section" class="nav-link">À propos</a>
-                  <ul class="dropdown">
-                    <li><a href="#faq-section" class="nav-link">FAQ</a></li>
-                    <li><a href="#services-section" class="nav-link">Services</a></li>
-                    <li><a href="#testimonials-section" class="nav-link">Témoignages</a></li>
-                  </ul>
-                </li>
-                <li><a href="#contact-section" class="nav-link">Contact</a></li>
-                <li><a href="verification.php" target="_self" class="nav-link">statut</a></li>
-              </ul>
-            </nav>
-          </div>
-          <div class="col-6 d-inline-block d-xl-none ml-md-0 py-3" style="position: relative; top: 3px;">
-            <a href="#" class="site-menu-toggle js-menu-toggle float-right"><span class="icon-menu h3"></span></a>
-          </div>
+            <div class="col-6 col-xl-2">
+                <img src="images/logo.png" alt="logo" class="responsive-logo" style="max-height: 50px;">
+            </div>
+            <div class="col-6 col-xl-10">
+                <!-- Menu desktop horizontal -->
+                <nav class="site-navigation position-relative text-right d-none d-xl-block" role="navigation">
+                    <ul class="site-menu main-menu d-flex justify-content-end" style="list-style: none; margin: 0; padding: 0;">
+                        <li style="margin-left: 30px;"><a href="#home-section" class="nav-link" style="color: #000; text-decoration: none; font-weight: 500; padding: 20px 0; display: block;">Accueil</a></li>
+                        
+                        <?php if ($est_connecte): ?>
+    <li style="margin-left: 30px; position: relative;" class="has-children">
+        <a href="#" class="nav-link">Bonjour <?= htmlspecialchars($user_prenom) ?></a>
+        <ul class="dropdown" style="position: absolute; top: 100%; left: 0; background: white; box-shadow: 0 5px 15px rgba(0,0,0,0.1); min-width: 200px; padding: 10px 0; display: none; list-style: none; z-index: 1000;">
+            <li><a href="dashboard.php" style="color: #333; text-decoration: none; padding: 10px 20px; display: block;">Mon compte</a></li>
+            <li><a href="client-cartes.php" style="color: #333; text-decoration: none; padding: 10px 20px; display: block;">Mes cartes</a></li>  <!-- ✅ NOUVEAU -->
+            <li><a href="verification.php" style="color: #333; text-decoration: none; padding: 10px 20px; display: block;">Vérifier statut</a></li>
+            <li><a href="client-rib.php" style="color: #333; text-decoration: none; padding: 10px 20px; display: block;">Mon RIB</a></li>
+            <li><a href="logout.php" style="color: #FF3131; text-decoration: none; padding: 10px 20px; display: block;">Déconnexion</a></li>
+        </ul>
+    </li>
+<?php else: ?>
+                            <li style="margin-left: 30px; position: relative;" class="has-children">
+                                 <a href="#about-section" class="nav-link">Espace client <span style="margin-left: 8px;"></span></a>
+                                <ul class="dropdown" style="position: absolute; top: 100%; left: 0; background: white; box-shadow: 0 5px 15px rgba(0,0,0,0.1); min-width: 200px; padding: 10px 0; display: none; list-style: none; z-index: 1000;">
+                                    <li><a href="login.php" style="color: #333; text-decoration: none; padding: 10px 20px; display: block;">Connexion</a></li>
+                                    <li><a href="register.php" style="color: #333; text-decoration: none; padding: 10px 20px; display: block;">Inscription</a></li>
+                                </ul>
+                            </li>
+                        <?php endif; ?>
+
+                        <li style="margin-left: 30px; position: relative;" class="has-children">
+                            <a href="#about-section" class="nav-link">À propos <span style="margin-left: 8px;"></span></a>
+                            <ul class="dropdown" style="position: absolute; top: 100%; left: 0; background: white; box-shadow: 0 5px 15px rgba(0,0,0,0.1); min-width: 200px; padding: 10px 0; display: none; list-style: none; z-index: 1000;">
+                                <li><a href="#faq-section" style="color: #333; text-decoration: none; padding: 10px 20px; display: block;">FAQ</a></li>
+                                <li><a href="#services-section" style="color: #333; text-decoration: none; padding: 10px 20px; display: block;">Services</a></li>
+                                <li><a href="#testimonials-section" style="color: #333; text-decoration: none; padding: 10px 20px; display: block;">Témoignages</a></li>
+                            </ul>
+                        </li>
+                        
+                        <li style="margin-left: 30px;"><a href="#contact-section" class="nav-link" style="color: #000; text-decoration: none; font-weight: 500; padding: 20px 0; display: block;">Contact</a></li>
+                        <li style="margin-left: 30px;"><a href="verification.php" class="nav-link" style="color: #000; text-decoration: none; font-weight: 500; padding: 20px 0; display: block;">Statut</a></li>
+                    </ul>
+                </nav>
+                
+                <!-- Bouton hamburger pour mobile -->
+                <div class="d-inline-block d-xl-none float-right" style="padding: 15px 0;">
+                    <a href="#" class="site-menu-toggle js-menu-toggle" style="color: #000; font-size: 24px; text-decoration: none;">
+                        <span class="icon-menu">☰</span>
+                    </a>
+                </div>
+            </div>
         </div>
-      </div>
-    </header>
+    </div>
+</header>
+
+<!-- Menu mobile -->
+<div class="site-mobile-menu" style="position: fixed; top: 0; right: -300px; width: 280px; height: 100vh; background: white; z-index: 9999; transition: 0.3s; box-shadow: -2px 0 10px rgba(0,0,0,0.1); overflow-y: auto;">
+    <div class="site-mobile-menu-header" style="padding: 20px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;">
+        <div style="font-weight: bold;">Menu</div>
+        <div class="site-mobile-menu-close" style="cursor: pointer; font-size: 24px;">✕</div>
+    </div>
+    <div class="site-mobile-menu-body" style="padding: 20px;"></div>
+</div>
+
+<div class="site-mobile-menu-overlay" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 9998; display: none;"></div>
     
     <div class="site-blocks-cover overlay" style="background-image: url(images/imageb5.jpg); background-repeat: no-repeat; background-size: cover;" data-aos="fade" id="home-section">
     <div class="container">
@@ -209,8 +300,8 @@
           
           <!-- Formulaire d'inscription avec champ email et bouton -->
           <div class="d-flex justify-content-center" data-aos="fade-up" data-aos-delay="100">
-            <form action="html/verification.html" class="sign-up-form d-flex align-items-center" data-aos="fade-up" data-aos-delay="200" style="background-color: rgb(255, 255, 255,0.6); padding: 10px; border-radius: 10px;">
-              <input type="submit"  value="UBS BANK" style="background-color: #FF3131; color: white; padding: 10px 20px; border-radius: 5px; border: none;">
+            <form action="verification.php" class="sign-up-form d-flex align-items-center" data-aos="fade-up" data-aos-delay="200" style="background-color: rgb(255, 255, 255,0.6); padding: 10px; border-radius: 10px;">
+              <input type="submit"  value="Verifier votre statut" style="background-color: #FF3131; color: white; padding: 10px 20px; border-radius: 5px; border: none;">
             </form>                
           </div>
         </div>
@@ -510,8 +601,8 @@
             
             <!-- Formulaire d'inscription avec champ email et bouton -->
             <div class="d-flex justify-content-center" data-aos="fade-up" data-aos-delay="100">
-              <form action="html/verification.html" class="sign-up-form d-flex align-items-center" data-aos="fade-up" data-aos-delay="200" style="background-color: rgb(255, 255, 255,0.6); padding: 10px; border-radius: 10px;">
-                <input type="submit" class="btn"  value="UBS BANK" style="background-color: #FF3131; color: white; padding: 10px 20px; border-radius: 5px; border: none;">
+              <form action="verification.php" class="sign-up-form d-flex align-items-center" data-aos="fade-up" data-aos-delay="200" style="background-color: rgb(255, 255, 255,0.6); padding: 10px; border-radius: 10px;">
+                <input type="submit" class="btn"  value="verifier votre statut" style="background-color: #FF3131; color: white; padding: 10px 20px; border-radius: 5px; border: none;">
               </form>                
             </div>
           </div>
@@ -590,10 +681,103 @@
   <script src="js/aos.js"></script>
   <script src="js/jquery.fancybox.min.js"></script>
   <script src="js/jquery.sticky.js"></script>
-  <script src="js/isotope.pkgd.min.js"></script>
+  <script src="js/isotope.pkgd.min.js"></script>  
+  <script src="js/main.js"></script>
 
   
-  <script src="js/main.js"></script>
+  <script>
+document.addEventListener('DOMContentLoaded', function() {
+    const menuToggle = document.querySelector('.js-menu-toggle');
+    const mobileMenu = document.querySelector('.site-mobile-menu');
+    const closeBtn = document.querySelector('.site-mobile-menu-close');
+    const overlay = document.querySelector('.site-mobile-menu-overlay');
+    
+    // Ouvrir le menu
+    if (menuToggle) {
+        menuToggle.addEventListener('click', function(e) {
+            e.preventDefault();
+            mobileMenu.classList.add('active');
+            overlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        });
+    }
+    
+    // Fermer le menu
+    function closeMobileMenu() {
+        mobileMenu.classList.remove('active');
+        overlay.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+    
+    if (closeBtn) {
+        closeBtn.addEventListener('click', closeMobileMenu);
+    }
+    
+    if (overlay) {
+        overlay.addEventListener('click', closeMobileMenu);
+    }
+    
+    // Générer le contenu du menu mobile
+    const mobileBody = document.querySelector('.site-mobile-menu-body');
+    if (mobileBody) {
+        mobileBody.innerHTML = `
+            <ul style="list-style: none; padding: 0;">
+                <li style="border-bottom: 1px solid #f0f0f0;"><a href="#home-section" style="display: block; padding: 15px; color: #333; text-decoration: none;">Accueil</a></li>
+                <li style="border-bottom: 1px solid #f0f0f0;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <a href="#" style="display: block; padding: 15px; color: #333; text-decoration: none;"><?= $est_connecte ? 'Bonjour ' . htmlspecialchars($user_prenom) : 'Espace client' ?></a>
+                        <span style="padding: 15px; cursor: pointer;" class="mobile-arrow">▼</span>
+                    </div>
+                    <ul style="list-style: none; padding: 0; background: #f9f9f9; display: none;">
+                        <?php if ($est_connecte): ?>
+                            <li><a href="dashboard.php" style="display: block; padding: 10px 30px; color: #333; text-decoration: none;">Mon compte</a></li>
+                            <li><a href="verification.php" style="display: block; padding: 10px 30px; color: #333; text-decoration: none;">Vérifier statut</a></li>
+                            <li><a href="logout.php" style="display: block; padding: 10px 30px; color: #FF3131; text-decoration: none;">Déconnexion</a></li>
+                        <?php else: ?>
+                            <li><a href="login.php" style="display: block; padding: 10px 30px; color: #333; text-decoration: none;">Connexion</a></li>
+                            <li><a href="register.php" style="display: block; padding: 10px 30px; color: #333; text-decoration: none;">Inscription</a></li>
+                        <?php endif; ?>
+                    </ul>
+                </li>
+                <li style="border-bottom: 1px solid #f0f0f0;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <a href="#" style="display: block; padding: 15px; color: #333; text-decoration: none;">À propos</a>
+                        <span style="padding: 15px; cursor: pointer;" class="mobile-arrow">▼</span>
+                    </div>
+                    <ul style="list-style: none; padding: 0; background: #f9f9f9; display: none;">
+                        <li><a href="#faq-section" style="display: block; padding: 10px 30px; color: #333; text-decoration: none;">FAQ</a></li>
+                        <li><a href="#services-section" style="display: block; padding: 10px 30px; color: #333; text-decoration: none;">Services</a></li>
+                        <li><a href="#testimonials-section" style="display: block; padding: 10px 30px; color: #333; text-decoration: none;">Témoignages</a></li>
+                    </ul>
+                </li>
+                <li style="border-bottom: 1px solid #f0f0f0;"><a href="#contact-section" style="display: block; padding: 15px; color: #333; text-decoration: none;">Contact</a></li>
+                <li style="border-bottom: 1px solid #f0f0f0;"><a href="verification.php" style="display: block; padding: 15px; color: #333; text-decoration: none;">Statut</a></li>
+            </ul>
+        `;
+        
+        // Gestion des sous-menus dans mobile
+        document.querySelectorAll('.mobile-arrow').forEach(arrow => {
+            arrow.addEventListener('click', function() {
+                const submenu = this.parentElement.nextElementSibling;
+                if (submenu.style.display === 'none' || !submenu.style.display) {
+                    submenu.style.display = 'block';
+                    this.style.transform = 'rotate(180deg)';
+                } else {
+                    submenu.style.display = 'none';
+                    this.style.transform = 'rotate(0deg)';
+                }
+            });
+        });
+    }
+    
+    // Fermer sur redimensionnement
+    window.addEventListener('resize', function() {
+        if (window.innerWidth > 1199) {
+            closeMobileMenu();
+        }
+    });
+});
+</script>
   
   </body>
 </html>

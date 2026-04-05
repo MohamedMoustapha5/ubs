@@ -1,18 +1,32 @@
 <?php
-// 🔐 Liste des 5 codes autorisés
-$codes_valides = ["23470", "45480", "65332", "55004", "22670"];
+// 🔐 Démarrer la session
+session_start();
+require_once 'config.php';
 
-$message = "Saisisez votre code reçu par Email";
+$message = "Saisissez votre code reçu par Email";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $code = $_POST["code"];
 
-    // Vérifie si le code saisi est dans la liste
-    if (in_array($code, $codes_valides)) {
-        header("Location: statut-virement.php");
-        exit;
-    } else {
-        $message = "Code incorrect. Aucun accès au statut du virement.";
+    // Vérifier si le code existe dans la base de données
+    try {
+        $stmt = $pdo->prepare("SELECT * FROM virements WHERE code_swift = ?");
+        $stmt->execute([$code]);
+        $virement = $stmt->fetch();
+        
+        if ($virement) {
+            // ✅ Code bon : on crée la session
+            $_SESSION['authentifie'] = true;
+            $_SESSION['code_utilise'] = $code;
+            
+            header("Location: statut-virement.php");
+            exit;
+        } else {
+            // ❌ Code incorrect
+            $message = "code incorrect. Aucun accès au statut du virement.";
+        }
+    } catch (Exception $e) {
+        $message = "Erreur de vérification.";
     }
 }
 ?>
@@ -26,7 +40,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <body>
 
 <div class="container">
-
     <h1>Vérifiez votre statut</h1>
     <p>Veuillez entrer le code SWIFT reçu.</p>
 
@@ -35,14 +48,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <?php endif; ?>
 
     <form method="POST">
-        <input type="number" class="form-control" name="code"
+        <input type="text" class="form-control" name="code"
                placeholder="Entrez le code SWIFT..." required>
 
         <button type="submit" class="btn-verifier">Vérifier</button>
     </form>
-
 </div>
 
 </body>
 </html>
-
