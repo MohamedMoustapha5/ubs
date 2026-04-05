@@ -2,6 +2,28 @@
 require_once 'config.php';
 require_once 'vendor/autoload.php';
 
+
+// ========== AJOUTER CES FONCTIONS SI ELLES MANQUENT ==========
+if (!function_exists('formatRoutingNumber')) {
+    function formatRoutingNumber($routing) {
+        return substr($routing, 0, 4) . '-' . substr($routing, 4, 4) . '-' . substr($routing, 8, 1);
+    }
+}
+
+if (!function_exists('formatAccountNumber')) {
+    function formatAccountNumber($account) {
+        return trim(chunk_split($account, 4, ' '));
+    }
+}
+// =============================================================
+
+// Vérifier si l'utilisateur est connecté (client)
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit;
+}
+
+// ... reste du code
 // Vérifier si l'utilisateur est connecté (client)
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
@@ -47,13 +69,21 @@ $pdf->SetAutoPageBreak(TRUE, 20);
 $pdf->AddPage();
 
 // ==============================================
-// EN-TÊTE
+// EN-TÊTE AVEC LOGO (DYNAMIQUE)
 // ==============================================
 
-// Logo
-$logo_file = 'images/logo.png';
+// Logo - UTILISE getActiveLogo()
+$logo_file = getActiveLogo();
 if (file_exists($logo_file)) {
-    $pdf->Image($logo_file, 20, 15, 40, 0, 'PNG', '', 'T', false, 300, '', false, false, 0, false, false, false);
+    // Déterminer le type d'image
+    $ext = strtolower(pathinfo($logo_file, PATHINFO_EXTENSION));
+    $img_type = '';
+    if ($ext == 'png') $img_type = 'PNG';
+    elseif ($ext == 'jpg' || $ext == 'jpeg') $img_type = 'JPG';
+    elseif ($ext == 'gif') $img_type = 'GIF';
+    else $img_type = 'PNG';
+    
+    $pdf->Image($logo_file, 20, 15, 40, 0, $img_type, '', 'T', false, 300, '', false, false, 0, false, false, false);
 }
 
 // Titre
@@ -108,13 +138,13 @@ $pdf->Cell(60, 10, 'Account Number:', 0, 0, 'L');
 $pdf->SetFont('courier', 'B', 14);
 $pdf->Cell(0, 10, formatAccountNumber($rib['account_number']), 0, 1, 'L', 1);
 
-// ✅ CLÉ RIB (UNIQUE PAR CLIENT)
+// Clé RIB
 $pdf->SetFont('helvetica', '', 12);
 $pdf->Cell(60, 10, 'Clé RIB:', 0, 0, 'L');
 $pdf->SetFont('courier', 'B', 14);
 $pdf->Cell(0, 10, isset($rib['cle_rib']) ? $rib['cle_rib'] : 'Non disponible', 0, 1, 'L', 1);
 
-// ✅ IBAN (FIXE POUR TOUS)
+// IBAN
 $pdf->SetFont('helvetica', '', 12);
 $pdf->Cell(60, 10, 'IBAN:', 0, 0, 'L');
 $pdf->SetFont('courier', 'B', 14);
@@ -165,7 +195,7 @@ $pdf->Ln(10);
 // ==============================================
 $pdf->SetFont('helvetica', 'I', 9);
 $pdf->SetTextColor(100, 100, 100);
-$pdf->MultiCell(0, 5, 'This document provides the bank account information of the holder. It is valid for all banking operations requiring these details. This account is held at UBS Bank USA, New York.', 0, 'L', 0, 1);
+$pdf->MultiCell(0, 5, 'This document provides the bank account information of the holder. It is valid for all banking operations requiring these details. ', 0, 'L', 0, 1);
 
 $pdf->Ln(5);
 $pdf->SetFont('helvetica', 'I', 8);

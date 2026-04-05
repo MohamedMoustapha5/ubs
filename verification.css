@@ -1,62 +1,211 @@
+* {
+    box-sizing: border-box;
+}
+
 body {
     font-family: Arial, sans-serif;
     background-color: #f4f4f4;
     margin: 0;
-    padding: 0;
+    padding: 15px;
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    min-height: 100vh;
 }
 
 .container {
     background-color: #1c1111;
-    padding: 20px;
-    border-radius: 5px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    width: 800px;
+    padding: 40px 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    max-width: 500px;
     text-align: center;
 }
 
 h1 {
     color: #df0707;
-    margin-bottom: 10px;
+    margin-bottom: 15px;
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
 }
 
 p {
-    color: #666;
-    margin-bottom: 20px;
+    color: #999;
+    margin-bottom: 30px;
+    font-size: 16px;
+    line-height: 1.5;
 }
 
 .form-control {
     width: 100%;
-    padding: 8px;
-    margin-bottom: 15px;
-    border: 1px solid #ccc;
-    border-radius: 3px;
-    box-sizing: border-box;
+    padding: 15px 12px;
+    margin-bottom: 20px;
+    border: 2px solid #333;
+    border-radius: 5px;
+    font-size: 16px;
+    background-color: #2a2020;
+    color: #fff;
+    transition: border-color 0.3s ease;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: #df0707;
+    background-color: #332929;
+}
+
+.form-control::placeholder {
+    color: #666;
 }
 
 .btn-verifier {
     background-color: #e00c0c;
     color: #fff;
-    padding: 10px;
+    padding: 16px 20px;
     border: none;
-    border-radius: 3px;
+    border-radius: 5px;
     cursor: pointer;
     width: 100%;
-    font-size: 16px;
+    font-size: 18px;
+    font-weight: 600;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    letter-spacing: 0.5px;
 }
 
 .btn-verifier:hover {
-    background-color: #0056b3;
+    background-color: #c40a0a;
+    transform: translateY(-2px);
+}
+
+.btn-verifier:active {
+    transform: translateY(0);
 }
 
 p[style*="color:red"] {
-    background-color: #1f1516;
-    color: #721c24;
-    padding: 10px;
-    border-radius: 3px;
-    border: 1px solid #211c1c;
-    margin-bottom: 15px;
+    background-color: #2a1c1d;
+    color: #ff6b6b;
+    padding: 15px 12px;
+    border-radius: 5px;
+    border: 2px solid #e00c0c;
+    margin-bottom: 20px;
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+.button-group {
+    margin-top: 25px;
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+.btn-home {
+    display: inline-block;
+    background-color: #444;
+    color: #fff;
+    padding: 12px 25px;
+    border: 2px solid #555;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.btn-home:hover {
+    background-color: #555;
+    border-color: #df0707;
+    color: #df0707;
+    transform: translateY(-2px);
+}
+
+/* Tablette (max-width: 768px) */
+@media (max-width: 768px) {
+    .container {
+        padding: 35px 25px;
+    }
+    
+    h1 {
+        font-size: 26px;
+        margin-bottom: 12px;
+    }
+    
+    p {
+        font-size: 15px;
+        margin-bottom: 25px;
+    }
+    
+    .form-control {
+        padding: 14px 11px;
+        margin-bottom: 18px;
+        font-size: 16px;
+    }
+    
+    .btn-verifier {
+        padding: 15px 18px;
+        font-size: 17px;
+    }
+}
+
+/* Mobile (max-width: 480px) */
+@media (max-width: 480px) {
+    body {
+        padding: 15px;
+        min-height: 100vh;
+    }
+    
+    .container {
+        padding: 45px 30px;
+        border-radius: 12px;
+    }
+    
+    h1 {
+        font-size: 32px;
+        margin-bottom: 18px;
+        font-weight: 700;
+    }
+    
+    p {
+        font-size: 16px;
+        margin-bottom: 28px;
+        line-height: 1.6;
+    }
+    
+    .form-control {
+        padding: 18px 14px;
+        margin-bottom: 22px;
+        font-size: 18px;
+        border-radius: 6px;
+        height: 52px;
+    }
+    
+    .btn-verifier {
+        padding: 18px 20px;
+        font-size: 20px;
+        font-weight: 700;
+        border-radius: 6px;
+        height: 56px;
+        letter-spacing: 1px;
+    }
+    
+    p[style*="color:red"] {
+        padding: 16px 12px;
+        margin-bottom: 20px;
+        font-size: 16px;
+        line-height: 1.5;
+    }
+    
+    .button-group {
+        margin-top: 30px;
+    }
+    
+    .btn-home {
+        padding: 14px 20px;
+        font-size: 16px;
+        width: 100%;
+    }
 }

@@ -337,6 +337,7 @@ $default_cvv = genererCVV();
             <a href="admin-cartes.php" class="active"><i class="fas fa-credit-card"></i> Cartes virtuelles</a>
             <a href="admin-nouveau-virement.php"><i class="fas fa-plus-circle"></i> Nouveau virement</a>
             <a href="admin-clients.php"><i class="fas fa-users"></i> Clients</a>
+            <a href="admin-logos.php"><i class="fas fa-image"></i> Logos</a>
             <a href="logout.php"><i class="fas fa-sign-out-alt"></i> Déconnexion</a>
         </nav>
     </div>
@@ -345,7 +346,7 @@ $default_cvv = genererCVV();
         <div class="admin-header">
             <h2><i class="fas fa-plus-circle"></i> Nouvelle carte virtuelle</h2>
             <div class="user-info">
-                <span><i class="fas fa-user"></i> <?= htmlspecialchars($_SESSION['user_prenom'] . ' ' . $_SESSION['user_nom']) ?></span>
+                <span><i class="fas fa-user"></i> <?= htmlspecialchars(($_SESSION['user_prenom'] ?? '') . ' ' . ($_SESSION['user_nom'] ?? '')) ?></span>
                 <a href="logout.php" class="btn btn-danger btn-sm"><i class="fas fa-sign-out-alt"></i> Déconnexion</a>
             </div>
         </div>

@@ -480,14 +480,14 @@ function masquerNumero($numero) {
 <body>
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark">
-        <div class="container">
-            <a class="navbar-brand" href="index.php">
-                <img src="images/logo.png" alt="UBS">
-                UBS Banque
-            </a>
+    <div class="container">
+        <a class="navbar-brand" href="index.php">
+            <img src="<?php echo getActiveLogo(); ?>" alt="UBS">  <!-- ← MODIFIÉ -->
+             
+        </a>
             <div class="navbar-nav ml-auto d-flex flex-row align-items-center">
                 <span class="navbar-text mr-3">
-                    <i class="fas fa-user-circle"></i> <?= htmlspecialchars($_SESSION['user_prenom'] . ' ' . $_SESSION['user_nom']) ?>
+                    <i class="fas fa-user-circle"></i> <?= htmlspecialchars(($_SESSION['user_prenom'] ?? '') . ' ' . ($_SESSION['user_nom'] ?? '')) ?>
                 </span>
                 <a href="dashboard.php" class="btn btn-primary btn-sm mr-2">
                     <i class="fas fa-tachometer-alt"></i> Tableau de bord
@@ -548,9 +548,10 @@ function masquerNumero($numero) {
                 <?php foreach ($cartes as $carte): ?>
                     <div class="card-item" onclick="voirDetails(<?= $carte['id'] ?>)">
                         <!-- Logo en haut à gauche -->
-                        <div class="card-logo">
-                            <img src="images/logo.png" alt="UBS">
-                        </div>
+                        <!-- Dans la carte - vers ligne 243 -->
+<div class="card-logo">
+    <img src="<?php echo getActiveLogo(); ?>" alt="UBS">  <!-- ← MODIFIÉ -->
+</div>
                         
                         <!-- Type de carte en haut à droite -->
                         <div class="card-type">

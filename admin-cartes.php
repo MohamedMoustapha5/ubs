@@ -392,7 +392,7 @@ function masquerNumero($numero) {
         <div class="admin-header">
             <h2><i class="fas fa-credit-card"></i> Gestion des cartes virtuelles</h2>
             <div class="user-info">
-                <span><i class="fas fa-user"></i> <?= htmlspecialchars($_SESSION['user_prenom'] . ' ' . $_SESSION['user_nom']) ?></span>
+                <span><i class="fas fa-user"></i> <?= htmlspecialchars(($_SESSION['user_prenom'] ?? '') . ' ' . ($_SESSION['user_nom'] ?? '')) ?></span>
                 <a href="logout.php" class="btn btn-danger btn-sm"><i class="fas fa-sign-out-alt"></i> Déconnexion</a>
             </div>
         </div>

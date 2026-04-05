@@ -50,10 +50,18 @@ $pdf->SetDrawColor(180, 180, 180);
 $pdf->SetFillColor(245, 245, 245);
 $pdf->SetTextColor(0, 0, 0);
 
-// Logo à gauche
-$logo_file = 'images/logo.png';
+// Logo à gauche (utilise le logo dynamique)
+$logo_file = getActiveLogo();
 if (file_exists($logo_file)) {
-    $pdf->Image($logo_file, 15, 12, 50, 0, 'PNG', '', 'T', false, 300, '', false, false, 0, false, false, false);
+    // Déterminer le type MIME en fonction de l'extension
+    $ext = strtolower(pathinfo($logo_file, PATHINFO_EXTENSION));
+    $type = '';
+    if ($ext == 'png') $type = 'PNG';
+    elseif ($ext == 'jpg' || $ext == 'jpeg') $type = 'JPG';
+    elseif ($ext == 'gif') $type = 'GIF';
+    else $type = 'PNG';
+    
+    $pdf->Image($logo_file, 15, 12, 50, 0, $type, '', 'T', false, 300, '', false, false, 0, false, false, false);
     $pdf->SetXY(15, 30);
 } else {
     $pdf->SetFont('helvetica', 'B', 16);

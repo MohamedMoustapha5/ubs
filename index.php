@@ -1,11 +1,17 @@
 <?php
-// Initialiser la langue
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+// Initialisation - NE PAS inclure config.php si init_lang.php le fait déjà
+// Mais init_lang.php n'inclut PAS config.php, donc on inclut les deux
+require_once 'config.php';
 require_once 'init_lang.php';
 
 // Vérifier si l'utilisateur est connecté
 $est_connecte = isset($_SESSION['user_id']);
 $user_prenom = $_SESSION['user_prenom'] ?? '';
 
+// Le reste de votre code...
 ?>
 
 <!doctype html>
@@ -111,7 +117,7 @@ $user_prenom = $_SESSION['user_prenom'] ?? '';
     <div class="container">
         <div class="row align-items-center">
             <div class="col-6 col-xl-2">
-                <img src="images/logo.png" alt="logo" class="responsive-logo" style="max-height: 50px;">
+               <img src="<?php echo getActiveLogo(); ?>" alt="logo" class="responsive-logo" style="max-height: 50px;">
             </div>
             <div class="col-6 col-xl-10">
                 <!-- Menu desktop horizontal -->

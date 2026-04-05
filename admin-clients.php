@@ -415,6 +415,7 @@ $stats = [
     <a href="admin-cartes.php"><i class="fas fa-credit-card"></i> Cartes virtuelles</a>  <!-- NOUVEAU -->
     <a href="admin-nouveau-virement.php"><i class="fas fa-plus-circle"></i> Nouveau virement</a>
     <a href="admin-clients.php" class="active"><i class="fas fa-users"></i> Clients</a>
+    <a href="admin-logos.php"><i class="fas fa-image"></i> Logos</a>
     <a href="logout.php"><i class="fas fa-sign-out-alt"></i> Déconnexion</a>
 </nav>
     </div>
@@ -423,7 +424,7 @@ $stats = [
         <div class="admin-header">
             <h2><i class="fas fa-users"></i> Gestion des clients</h2>
             <div class="user-info">
-                <span><i class="fas fa-user"></i> <?= htmlspecialchars($_SESSION['user_prenom'] . ' ' . $_SESSION['user_nom']) ?></span>
+                <span><i class="fas fa-user"></i> <?= htmlspecialchars(($_SESSION['user_prenom'] ?? '') . ' ' . ($_SESSION['user_nom'] ?? '')) ?></span>
                 <a href="logout.php" class="btn btn-danger btn-sm"><i class="fas fa-sign-out-alt"></i> Déconnexion</a>
             </div>
         </div>

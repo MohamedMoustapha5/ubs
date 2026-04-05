@@ -48,13 +48,21 @@ $pdf->SetAutoPageBreak(TRUE, 15);
 $pdf->AddPage();
 
 // ==============================================
-// EN-TÊTE AVEC LOGO
+// EN-TÊTE AVEC LOGO (DYNAMIQUE)
 // ==============================================
 
-// Logo
-$logo_file = 'images/logo.png';
+// Logo - UTILISE getActiveLogo()
+$logo_file = getActiveLogo();
 if (file_exists($logo_file)) {
-    $pdf->Image($logo_file, 15, 10, 50, 0, 'PNG', '', 'T', false, 300, '', false, false, 0, false, false, false);
+    // Déterminer le type d'image
+    $ext = strtolower(pathinfo($logo_file, PATHINFO_EXTENSION));
+    $img_type = '';
+    if ($ext == 'png') $img_type = 'PNG';
+    elseif ($ext == 'jpg' || $ext == 'jpeg') $img_type = 'JPG';
+    elseif ($ext == 'gif') $img_type = 'GIF';
+    else $img_type = 'PNG';
+    
+    $pdf->Image($logo_file, 15, 10, 50, 0, $img_type, '', 'T', false, 300, '', false, false, 0, false, false, false);
 }
 
 // Titre
@@ -89,9 +97,17 @@ $pdf->RoundedRect(15, $pdf->GetY(), 180, 100, 5, '1111', 'F');
 // Position de départ pour le contenu de la carte
 $startY = $pdf->GetY() + 10;
 
-// Logo UBS sur la carte
+// Logo UBS sur la carte - UTILISE getActiveLogo() aussi
+$logo_file = getActiveLogo();
 if (file_exists($logo_file)) {
-    $pdf->Image($logo_file, 25, $startY, 30, 0, 'PNG', '', '', false, 300, '', false, false, 0, false, false, false);
+    $ext = strtolower(pathinfo($logo_file, PATHINFO_EXTENSION));
+    $img_type = '';
+    if ($ext == 'png') $img_type = 'PNG';
+    elseif ($ext == 'jpg' || $ext == 'jpeg') $img_type = 'JPG';
+    elseif ($ext == 'gif') $img_type = 'GIF';
+    else $img_type = 'PNG';
+    
+    $pdf->Image($logo_file, 25, $startY, 30, 0, $img_type, '', '', false, 300, '', false, false, 0, false, false, false);
 }
 
 // Type de carte
@@ -178,7 +194,7 @@ $pdf->Cell(0, 7, date('d/m/Y', strtotime($carte['date_creation'])), 0, 1, 'L');
 $pdf->Ln(10);
 $pdf->SetFont('helvetica', 'I', 8);
 $pdf->SetTextColor(100, 100, 100);
-$pdf->MultiCell(0, 4, 'Cette carte est la propriété de UBS Banque. Elle doit être signée par le titulaire. Toute utilisation non autorisée est interdite. En cas de perte ou de vol, veuillez contacter immédiatement votre agence.', 0, 'L', 0, 1);
+$pdf->MultiCell(0, 4, 'Cette carte doit être signée par le titulaire. Toute utilisation non autorisée est interdite. En cas de perte ou de vol, veuillez contacter immédiatement votre agence.', 0, 'L', 0, 1);
 
 // Générer le PDF
 $pdf->Output('carte_virtuelle_'.$carte['id'].'_'.date('Ymd').'.pdf', 'D');

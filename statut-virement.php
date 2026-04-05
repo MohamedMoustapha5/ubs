@@ -273,9 +273,9 @@ $pourcentage = $virement['pourcentage'] ?? 95;
 </head>
 <body onload="simulateProgress(<?= $pourcentage ?>)">
     <div class="header">
-        <img src="images/logo.png" alt="Logo Banque">
-        <button class="menu-button" onclick="sortir()">Menu</button>
-    </div>
+    <img src="<?php echo getActiveLogo(); ?>" alt="Logo Banque">
+    <button class="menu-button" onclick="sortir()">Menu</button>
+</div>
     
     <div class="title-container">
         <h2><?= trans('suivi_virement') ?></h2>

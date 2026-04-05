@@ -24,7 +24,7 @@ if (!isset($_SESSION['user_id'])) {
             <a class="navbar-brand" href="#">UBS - Espace client</a>
             <div class="navbar-nav ml-auto">
                 <span class="navbar-text text-white mr-3">
-                    Bienvenue, <?= htmlspecialchars($_SESSION['user_prenom'] . ' ' . $_SESSION['user_nom']) ?>
+                    Bienvenue, <?= htmlspecialchars(($_SESSION['user_prenom'] ?? '') . ' ' . ($_SESSION['user_nom'] ?? '')) ?>
                 </span>
                 <a href="logout.php" class="btn btn-danger btn-sm">Déconnexion</a>
             </div>
@@ -35,7 +35,7 @@ if (!isset($_SESSION['user_id'])) {
         <div class="row">
             <div class="col-md-12">
                 <div class="jumbotron">
-                    <h1 class="display-4">Bonjour <?= htmlspecialchars($_SESSION['user_prenom']) ?> !</h1>
+                    <h1 class="display-4">Bonjour <?= htmlspecialchars($_SESSION['user_prenom'] ?? '') ?> !</h1>
                     <p class="lead">Bienvenue dans votre espace client UBS.</p>
                     <hr class="my-4">
                     <p>Vous pouvez maintenant accéder à tous nos services.</p>

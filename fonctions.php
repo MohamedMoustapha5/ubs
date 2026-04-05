@@ -1,59 +1,96 @@
 <?php
-// fonctions.php - Fonctions utilitaires pour RIB américain
+// fonctions.php - (tout votre code existant + ajout à la fin)
 
-function genererRoutingNumber() {
-    // Générer un routing number américain (9 chiffres)
-    // Les 4 premiers chiffres identifient la banque (ex: 0210 pour UBS)
-    $prefix = '0210'; // Code pour UBS
-    $suffix = str_pad(rand(0, 99999), 5, '0', STR_PAD_LEFT);
-    return $prefix . $suffix;
-}
+// ... vos fonctions existantes (genererRoutingNumber, etc.) ...
 
-function genererAccountNumber() {
-    // Générer un numéro de compte américain (10-17 chiffres)
-    $length = rand(10, 12);
-    $number = '';
-    for ($i = 0; $i < $length; $i++) {
-        $number .= rand(0, 9);
+// ========== FONCTIONS DE GESTION DES LOGOS ==========
+
+function createConfigurationTable() {
+    global $pdo;
+    try {
+        $pdo->exec("
+            CREATE TABLE IF NOT EXISTS configuration (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                cle VARCHAR(100) NOT NULL UNIQUE,
+                valeur TEXT,
+                date_creation DATETIME DEFAULT CURRENT_TIMESTAMP,
+                date_modification DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+            )
+        ");
+        return true;
+    } catch (Exception $e) {
+        return false;
     }
-    return $number;
 }
 
-function genererSwiftCode() {
-    // Générer un code SWIFT américain (8 ou 11 caractères)
-    $bank_codes = ['UBSW', 'BOFA', 'CITI', 'JPMC', 'WFBI'];
-    $bank = $bank_codes[array_rand($bank_codes)];
-    $country = 'US';
-    $location = '33'; // New York
-    $branch = rand(0, 999) ? 'XXX' : str_pad(rand(1, 999), 3, '0', STR_PAD_LEFT);
+function getActiveLogo() {
+    global $pdo;
     
-    return $bank . $country . $location . (strlen($branch) == 3 ? $branch : '');
+    // Valeur par défaut
+    $default_logo = 'images/logo.png';
+    
+    // Si pas de PDO ou pas de table, retourner défaut
+    if (!isset($pdo)) {
+        return $default_logo;
+    }
+    
+    try {
+        $stmt = $pdo->query("SELECT valeur FROM configuration WHERE cle = 'logo_actif' LIMIT 1");
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if ($result && !empty($result['valeur']) && file_exists($result['valeur'])) {
+            return $result['valeur'];
+        }
+        return $default_logo;
+    } catch (Exception $e) {
+        return $default_logo;
+    }
 }
 
-function formatRoutingNumber($routing) {
-    // Formater le routing number: XXXX-XXXX-X
-    return substr($routing, 0, 4) . '-' . substr($routing, 4, 4) . '-' . substr($routing, 8, 1);
+function setActiveLogo($logo_path) {
+    global $pdo;
+    
+    try {
+        $stmt = $pdo->prepare("SELECT COUNT(*) as count FROM configuration WHERE cle = 'logo_actif'");
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if ($result['count'] > 0) {
+            $stmt = $pdo->prepare("UPDATE configuration SET valeur = ?, date_modification = NOW() WHERE cle = 'logo_actif'");
+            return $stmt->execute([$logo_path]);
+        } else {
+            $stmt = $pdo->prepare("INSERT INTO configuration (cle, valeur, date_creation) VALUES ('logo_actif', ?, NOW())");
+            return $stmt->execute([$logo_path]);
+        }
+    } catch (Exception $e) {
+        return false;
+    }
 }
 
-function formatAccountNumber($account) {
-    // Formater le numéro de compte par groupes de 4
-    return trim(chunk_split($account, 4, ' '));
+function getAvailableLogos() {
+    $logos = [];
+    $directory = __DIR__ . '/images/';
+    
+    if (!is_dir($directory)) {
+        return $logos;
+    }
+    
+    $files = scandir($directory);
+    $extensions = ['png', 'jpg', 'jpeg', 'gif', 'webp'];
+    
+    foreach ($files as $file) {
+        if ($file == '.' || $file == '..') continue;
+        
+        $ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
+        if (in_array($ext, $extensions)) {
+            $logos[] = [
+                'name' => $file,
+                'path' => 'images/' . $file,
+                'display_name' => pathinfo($file, PATHINFO_FILENAME)
+            ];
+        }
+    }
+    
+    return $logos;
 }
-
-// ✅ NOUVELLE FONCTION POUR GÉNÉRER L'IBAN (FIXE POUR TOUS)
-function genererIbanFixe() {
-    // IBAN UBS Bank USA (fixe pour tous les clients)
-    return 'US02 0210 0012 3456 7890 1234';
-}
-
-// ✅ NOUVELLE FONCTION POUR GÉNÉRER LA CLÉ RIB (UNIQUE PAR CLIENT)
-function genererCleRIB($account_number) {
-    // Calcul d'une clé RIB basée sur le numéro de compte
-    // Prend les 10 premiers chiffres du compte pour calculer une clé
-    $account_digits = preg_replace('/[^0-9]/', '', $account_number);
-    $account_value = intval(substr($account_digits, 0, 10));
-    $cle = 97 - ($account_value % 97);
-    return str_pad($cle, 2, '0', STR_PAD_LEFT);
-}
-
 ?>

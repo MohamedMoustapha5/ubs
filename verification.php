@@ -35,6 +35,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <html>
 <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vérification du code</title>
     <link rel="stylesheet" href="verification.css">
 </head>
@@ -54,6 +55,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         <button type="submit" class="btn-verifier"><?= trans('verifier') ?></button>
     </form>
+
+    <div class="button-group">
+        <a href="index.php" class="btn-home">Accueil</a>
+    </div>
 </div>
 
 </body>

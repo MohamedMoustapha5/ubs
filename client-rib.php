@@ -1,6 +1,22 @@
 <?php
+
 require_once 'config.php';
 require_once 'init_lang.php';
+
+// Ajouter ces fonctions si elles ne sont pas chargées
+if (!function_exists('formatRoutingNumber')) {
+    function formatRoutingNumber($routing) {
+        return substr($routing, 0, 4) . '-' . substr($routing, 4, 4) . '-' . substr($routing, 8, 1);
+    }
+}
+
+if (!function_exists('formatAccountNumber')) {
+    function formatAccountNumber($account) {
+        return trim(chunk_split($account, 4, ' '));
+    }
+}
+
+// ... reste du code
 
 // Vérifier si l'utilisateur est connecté (client)
 if (!isset($_SESSION['user_id'])) {
@@ -37,7 +53,7 @@ try {
             $swift_code,
             'UBS Bank USA',
             '1285 Avenue of the Americas, New York, NY 10019, USA',
-            strtoupper($_SESSION['user_prenom'] . ' ' . $_SESSION['user_nom']),
+            strtoupper(($_SESSION['user_prenom'] ?? '') . ' ' . ($_SESSION['user_nom'] ?? '')),
             'USA'
         ]);
         
@@ -305,12 +321,11 @@ $client = $stmt->fetch();
     <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container">
             <a class="navbar-brand" href="index.php">
-                <img src="images/logo.png" alt="UBS">
-                UBS Bank USA
+                <img src="<?php echo getActiveLogo(); ?>" alt="UBS">
             </a>
             <div class="navbar-nav ml-auto d-flex flex-row align-items-center">
                 <span class="navbar-text mr-3">
-                    <i class="fas fa-user-circle"></i> <?= htmlspecialchars($_SESSION['user_prenom'] . ' ' . $_SESSION['user_nom']) ?>
+                    <i class="fas fa-user-circle"></i> <?= htmlspecialchars(($_SESSION['user_prenom'] ?? '') . ' ' . ($_SESSION['user_nom'] ?? '')) ?>
                 </span>
                 <a href="dashboard.php" class="btn btn-primary btn-sm mr-2">
                     <i class="fas fa-tachometer-alt"></i> Tableau de bord
@@ -324,14 +339,15 @@ $client = $stmt->fetch();
 
     <div class="container">
         <div class="rib-card">
-            <div class="rib-header">
-                <h2>
-                    <i class="fas fa-file-invoice" style="color: #c62828;"></i> 
-                    Relevé d'Identité Bancaire
-                    <span class="usa-flag"><i class="fas fa-flag-usa"></i> USA</span>
-                </h2>
-                <img src="images/logo.png" alt="UBS">
-            </div>
+            <!-- En-tête du RIB - vers ligne 207 -->
+<div class="rib-header">
+    <h2>
+        <i class="fas fa-file-invoice" style="color: #c62828;"></i> 
+        Relevé d'Identité Bancaire
+        <span class="usa-flag"><i class="fas fa-flag-usa"></i> USA</span>
+    </h2>
+    <img src="<?php echo getActiveLogo(); ?>" alt="UBS">  <!-- ← MODIFIÉ -->
+</div>
             
             <?php if (isset($erreur)): ?>
                 <div class="alert alert-danger"><?= $erreur ?></div>
