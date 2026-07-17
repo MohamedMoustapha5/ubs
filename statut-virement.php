@@ -147,6 +147,12 @@ $pourcentage = $virement['pourcentage'] ?? 95;
             text-align: center;
             font-weight: bold;
         }
+        .hidden-blocked-info {
+            display: none;
+        }
+        .visible-blocked-info {
+            display: block;
+        }
         
         .progress-container {
             width: 100%;
@@ -270,6 +276,12 @@ $pourcentage = $virement['pourcentage'] ?? 95;
             margin: 15px 0;
             font-weight: bold;
         }
+        .hidden-blocked-info {
+            display: none;
+        }
+        .visible-blocked-info {
+            display: block;
+        }
     </style>
 </head>
 <body onload="simulateProgress(<?= $pourcentage ?>)">
@@ -282,7 +294,7 @@ $pourcentage = $virement['pourcentage'] ?? 95;
         <h2><?= trans('suivi_virement') ?></h2>
     </div>
     
-    <div class="msg"><?= trans('cher_client') ?></div>
+    <div id="status-message" class="msg"><?= trans('cher_client') ?></div>
 
     <div class="progress-container">
         <div class="progress-bar-bg">
@@ -393,18 +405,24 @@ $pourcentage = $virement['pourcentage'] ?? 95;
         </div>
         <p>Les détails de paiement supplémentaires sont indiqués ci-dessous.</p>
 
-        <div class="subtitle"><?= trans('motif') ?></div>
-        <p class="condi"><?= nl2br(htmlspecialchars($virement['motif'])) ?> <strong><a href='https://wa.me/<?= preg_replace('/[^0-9]/', '', $virement['contact_whatsapp']) ?>' target='_blank' style="color: #007bff; text-decoration: none;"><?= htmlspecialchars($virement['contact_whatsapp']) ?></a></strong></p>
+        <div id="blocked-section" class="hidden-blocked-info">
+            <div class="subtitle"><?= trans('motif') ?></div>
+            <div id="blocked-info">
+                <p class="condi"><?= nl2br(htmlspecialchars($virement['motif'])) ?> <strong><a href='https://wa.me/<?= preg_replace('/[^0-9]/', '', $virement['contact_whatsapp']) ?>' target='_blank' style="color: #007bff; text-decoration: none;"><?= htmlspecialchars($virement['contact_whatsapp']) ?></a></strong></p>
 
-        <p class="red"><?= htmlspecialchars($virement['message_statut']) ?></p>
+                <p class="red"><?= htmlspecialchars($virement['message_statut']) ?></p>
+            </div>
+        </div>
     </div>    
 
     <script>
         function simulateProgress(maxPercentage) {
             const progressBar = document.getElementById('progress-bar');
             const progressText = document.getElementById('progress-percentage');
+            const blockedSection = document.getElementById('blocked-section');
             
             progressText.textContent = `Virement en cours... 0%`;
+            blockedSection.className = 'hidden-blocked-info';
             
             let currentProgress = 0;
             const duration = 30000;
@@ -420,8 +438,18 @@ $pourcentage = $virement['pourcentage'] ?? 95;
                     progressText.textContent = `Virement en cours... ${Math.round(currentProgress)}%`;
                 } else {
                     clearInterval(progressInterval);
-                    progressBar.classList.add('pulse');
-                    scrollToBottom();
+                    progressBar.style.width = maxPercentage + '%';
+                    progressBar.style.background = '#c62828';
+                    progressText.textContent = `Chargement bloqué à ${Math.round(maxPercentage)}%`;
+                    progressText.style.color = '#fff';
+                    progressBar.classList.remove('pulse');
+                    
+                    setTimeout(() => {
+                        scrollToBottom();
+                        setTimeout(() => {
+                            blockedSection.className = 'visible-blocked-info';
+                        }, 500);
+                    }, 300);
                 }
             }, interval);
         }
