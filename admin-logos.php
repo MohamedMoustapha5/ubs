@@ -13,26 +13,51 @@ createConfigurationTable();
 $message = '';
 $message_type = '';
 
-// Traiter le changement de logo
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['change_logo'])) {
-    $new_logo = $_POST['selected_logo'] ?? '';
-    
-    if (!empty($new_logo)) {
-        if (file_exists(__DIR__ . '/' . $new_logo)) {
+// Traiter les actions POST
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (isset($_POST['change_logo'])) {
+        $new_logo = $_POST['selected_logo'] ?? '';
+
+        if (!empty($new_logo) && file_exists(__DIR__ . '/' . $new_logo)) {
             if (setActiveLogo($new_logo)) {
-                $message = "✅ Logo changé avec succès!";
+                $message = "✅ Logo changé avec succès !";
                 $message_type = "success";
             } else {
                 $message = "❌ Erreur lors du changement du logo.";
                 $message_type = "error";
             }
         } else {
-            $message = "❌ Le fichier du logo n'existe pas.";
+            $message = "❌ Veuillez sélectionner un logo valide.";
             $message_type = "error";
         }
-    } else {
-        $message = "❌ Veuillez sélectionner un logo.";
-        $message_type = "error";
+    } elseif (isset($_POST['upload_logo'])) {
+        if (isset($_FILES['new_logo']) && $_FILES['new_logo']['error'] === UPLOAD_ERR_OK) {
+            $uploaded = uploadLogoFile($_FILES['new_logo']);
+            if ($uploaded !== false) {
+                $message = "✅ Logo ajouté avec succès !";
+                $message_type = "success";
+            } else {
+                $message = "❌ Impossible d'ajouter ce logo. Vérifiez le format et réessayez.";
+                $message_type = "error";
+            }
+        } else {
+            $message = "❌ Aucun fichier de logo valide n'a été téléchargé.";
+            $message_type = "error";
+        }
+    } elseif (isset($_POST['delete_logo']) && !empty($_POST['logo_to_delete'])) {
+        $logo_to_delete = $_POST['logo_to_delete'];
+        $active_logo = getActiveLogo();
+
+        if ($logo_to_delete === $active_logo) {
+            $message = "❌ Vous ne pouvez pas supprimer le logo actif. Changez d'abord de logo.";
+            $message_type = "error";
+        } elseif (deleteLogoFile($logo_to_delete)) {
+            $message = "✅ Logo supprimé avec succès !";
+            $message_type = "success";
+        } else {
+            $message = "❌ Impossible de supprimer ce logo.";
+            $message_type = "error";
+        }
     }
 }
 
@@ -415,6 +440,24 @@ $available_logos = getAvailableLogos();
             </div>
         </div>
         
+        <!-- Ajouter un logo -->
+        <div class="card">
+            <div class="card-title">
+                <i class="fas fa-upload"></i> Ajouter un nouveau logo
+            </div>
+            <form method="POST" enctype="multipart/form-data">
+                <div style="display:flex; flex-wrap:wrap; gap:15px; align-items:center;">
+                    <div style="flex:1; min-width:220px;">
+                        <input type="file" name="new_logo" accept="image/png,image/jpeg,image/jpg,image/gif,image/webp" class="form-control" required>
+                    </div>
+                    <button type="submit" name="upload_logo" class="btn btn-primary">
+                        <i class="fas fa-plus-circle"></i> Ajouter le logo
+                    </button>
+                </div>
+                <p style="margin-top:10px; color:#666; font-size:0.95rem;">Formats autorisés : PNG, JPG, JPEG, GIF, WEBP. Taille maximale recommandée : 2 Mo.</p>
+            </form>
+        </div>
+
         <!-- Sélection du logo -->
         <div class="card">
             <div class="card-title">
@@ -428,6 +471,8 @@ $available_logos = getAvailableLogos();
                 </div>
             <?php else: ?>
                 <form method="POST" id="logoForm">
+                    <input type="hidden" name="delete_logo" value="0">
+                    <input type="hidden" name="logo_to_delete" value="">
                     <div class="logos-grid" id="logosContainer">
                         <?php foreach ($available_logos as $logo): ?>
                             <div class="logo-card <?= $logo['path'] === $active_logo ? 'active' : '' ?>" 
@@ -439,6 +484,11 @@ $available_logos = getAvailableLogos();
                                 </div>
                                 <div class="logo-name"><?= htmlspecialchars($logo['display_name']) ?></div>
                                 <small class="text-muted"><?= htmlspecialchars($logo['name']) ?></small>
+                                <?php if ($logo['path'] !== $active_logo): ?>
+                                    <button type="button" class="btn btn-sm btn-danger delete-logo" data-logo="<?= htmlspecialchars($logo['path']) ?>" style="margin-top:10px;">Supprimer</button>
+                                <?php else: ?>
+                                    <span class="badge badge-success" style="margin-top:10px; display:inline-block;">Actif</span>
+                                <?php endif; ?>
                             </div>
                         <?php endforeach; ?>
                     </div>
@@ -492,10 +542,25 @@ $available_logos = getAvailableLogos();
     
     // Gestion du clic sur les cartes de logo
     document.querySelectorAll('.logo-card').forEach(card => {
-        card.addEventListener('click', function() {
+        card.addEventListener('click', function(e) {
+            if (e.target.classList.contains('delete-logo')) {
+                return;
+            }
             document.querySelectorAll('.logo-card').forEach(c => c.classList.remove('active'));
             this.classList.add('active');
             this.querySelector('input[type="radio"]').checked = true;
+        });
+    });
+
+    document.querySelectorAll('.delete-logo').forEach(button => {
+        button.addEventListener('click', function() {
+            const logoPath = this.getAttribute('data-logo');
+            if (!confirm('Confirmez-vous la suppression de ce logo ?')) {
+                return;
+            }
+            document.querySelector('input[name="delete_logo"]').value = '1';
+            document.querySelector('input[name="logo_to_delete"]').value = logoPath;
+            document.getElementById('logoForm').submit();
         });
     });
     

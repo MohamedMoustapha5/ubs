@@ -1,244 +1,189 @@
 <?php
 require_once 'config.php';
-require_once 'vendor/autoload.php';
 
 // Vérifier si l'utilisateur est connecté ET est admin
 if (!isset($_SESSION['user_id']) || !isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'admin') {
-    header("Location: login.php");
+    header('Location: login.php');
     exit;
 }
 
 $id = $_GET['id'] ?? 0;
 
-// Récupérer les informations du virement
 try {
-    $stmt = $pdo->prepare("SELECT * FROM virements WHERE id = ?");
+    $stmt = $pdo->prepare('SELECT * FROM virements WHERE id = ?');
     $stmt->execute([$id]);
     $virement = $stmt->fetch();
-    
     if (!$virement) {
-        die("Virement non trouvé");
+        die('Virement non trouvé');
     }
 } catch (Exception $e) {
-    die("Erreur: " . $e->getMessage());
+    die('Erreur: ' . $e->getMessage());
 }
 
-// Création du PDF
 $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, 'A4', true, 'UTF-8', false);
-
-// Configuration
 $pdf->SetCreator('UBS Admin');
 $pdf->SetAuthor('UBS BANK');
-$pdf->SetTitle('Ordre de virement #'.$virement['id']);
+$pdf->SetTitle('Ordre de virement #' . $virement['id']);
 $pdf->SetSubject('Ordre de virement international');
-
-// Supprimer l'en-tête et le pied de page par défaut
 $pdf->setPrintHeader(false);
 $pdf->setPrintFooter(false);
-
-// Marges
-$pdf->SetMargins(15, 15, 15);
-$pdf->SetAutoPageBreak(TRUE, 15);
-
-// Ajouter une page
+$pdf->SetMargins(12, 12, 12);
+$pdf->SetAutoPageBreak(true, 8);
 $pdf->AddPage();
 
-// ==============================================
-// EN-TÊTE AVEC LOGO ET STYLE PROFESSIONNEL
-// ==============================================
-$pdf->SetDrawColor(180, 180, 180);
-$pdf->SetFillColor(245, 245, 245);
-$pdf->SetTextColor(0, 0, 0);
-
-// Logo à gauche (utilise le logo dynamique)
 $logo_file = getActiveLogo();
-if (file_exists($logo_file)) {
-    // Déterminer le type MIME en fonction de l'extension
-    $ext = strtolower(pathinfo($logo_file, PATHINFO_EXTENSION));
-    $type = '';
-    if ($ext == 'png') $type = 'PNG';
-    elseif ($ext == 'jpg' || $ext == 'jpeg') $type = 'JPG';
-    elseif ($ext == 'gif') $type = 'GIF';
-    else $type = 'PNG';
-    
-    $pdf->Image($logo_file, 15, 12, 50, 0, $type, '', 'T', false, 300, '', false, false, 0, false, false, false);
-    $pdf->SetXY(15, 30);
-} else {
-    $pdf->SetFont('helvetica', 'B', 16);
-    $pdf->SetXY(15, 18);
-    $pdf->Cell(0, 8, 'UBS BANK', 0, 1, 'L');
-    $pdf->SetXY(15, 28);
+renderPageHeader($pdf, $logo_file, $virement);
+
+function renderSectionTitle($pdf, $title)
+{
+    $pdf->SetFont('helvetica', 'B', 11);
+    $pdf->Cell(0, 5, '* ' . $title, 0, 1, 'L');
+    $pdf->Ln(1);
 }
 
-$pdf->SetFont('helvetica', '', 10);
-$pdf->Cell(0, 5, $virement['expediteur_pays'], 0, 1, 'L');
+function renderRow($pdf, $label, $value, $highlight = false)
+{
+    $pdf->SetFont('helvetica', '', 10);
+    $pdf->Cell(85, 5, $label, 0, 0, 'L');
+    if ($highlight) {
+        $pdf->SetFillColor(255, 243, 169);
+        $pdf->SetFont('helvetica', 'B', 10);
+        $pdf->MultiCell(0, 5, $value, 0, 'L', 1, 1, '', '', true);
+        $pdf->SetTextColor(0, 0, 0);
+    } else {
+        $pdf->SetFont('helvetica', 'B', 10);
+        $pdf->MultiCell(0, 5, $value, 0, 'L', 0, 1, '', '', true);
+    }
+}
 
-// Informations document
-$pdf->SetFont('helvetica', 'B', 10);
-$pdf->SetXY(115, 15);
-$pdf->Cell(0, 6, 'ORDRE DE VIREMENT', 0, 1, 'R');
-$pdf->SetFont('helvetica', '', 9);
-$pdf->SetXY(115, 22);
-$pdf->Cell(0, 5, 'Document professionnel', 0, 1, 'R');
-$pdf->SetXY(115, 28);
-$pdf->Cell(0, 5, 'Date : '.date('d/m/Y', strtotime($virement['date_creation'])), 0, 1, 'R');
-$pdf->SetXY(115, 33);
-$pdf->Cell(0, 5, 'Référence : '.$virement['code_swift'], 0, 1, 'R');
+function renderSeparator($pdf)
+{
+    $pdf->Ln(1);
+    $pdf->SetLineStyle(array('width' => 0.4, 'dash' => '2,2', 'color' => array(180, 180, 180)));
+    $pdf->Line(15, $pdf->GetY(), 195, $pdf->GetY());
+    $pdf->Ln(6);
+}
 
-// Ligne de séparation
-$pdf->Line(15, 42, 195, 42);
-$pdf->Ln(12);
+function renderPageHeader($pdf, $logo_file, $virement)
+{
+    if (file_exists($logo_file)) {
+        $ext = strtolower(pathinfo($logo_file, PATHINFO_EXTENSION));
+        $img_type = 'PNG';
+        if ($ext === 'jpg' || $ext === 'jpeg') {
+            $img_type = 'JPG';
+        } elseif ($ext === 'gif') {
+            $img_type = 'GIF';
+        }
+        $pdf->Image($logo_file, 15, 15, 45, 0, $img_type, '', 'T', false, 300, '', false, false, 0, false, false, false);
+    }
 
-// ==============================================
-// TITRE PRINCIPAL
-// ==============================================
-$pdf->SetFont('helvetica', 'B', 16);
-$pdf->Cell(0, 8, 'ORDRE DE VIREMENT INTERNATIONAL', 0, 1, 'C');
-$pdf->SetFont('helvetica', 'I', 9);
-$pdf->Cell(0, 5, 'International Transfer Order', 0, 1, 'C');
-$pdf->Ln(10);
+    $pdf->SetFont('helvetica', 'B', 18);
+    $pdf->SetXY(70, 18);
+    $pdf->Cell(0, 6, $virement['expediteur_nom_banque'] ?? 'Banque émettrice', 0, 1, 'L');
+    $pdf->SetFont('helvetica', '', 10);
+    $pdf->SetXY(70, 24);
+    $pdf->Cell(0, 5, $virement['expediteur_pays'] ?? 'Pays émettrice', 0, 1, 'L');
 
-// ==============================================
-// SECTION 1 - BANQUE ÉMETTRICE
-// ==============================================
-$pdf->SetFillColor(230, 230, 230);
-$pdf->SetFont('helvetica', 'B', 10);
-$pdf->Cell(0, 7, '1. Informations de la banque émettrice', 0, 1, 'L', 1);
-$pdf->SetFont('helvetica', '', 10);
-$pdf->SetFillColor(255, 255, 255);
+    $pdf->SetFont('helvetica', 'B', 20);
+    $pdf->SetY(42);
+    $pdf->Cell(0, 10, 'ORDRE DE VIREMENT INTERNATIONAL', 0, 1, 'C');
+    $pdf->SetFont('helvetica', 'I', 10);
+    $pdf->Cell(0, 6, 'International Transfer Order', 0, 1, 'C');
 
-$pdf->SetFont('helvetica', '', 10);
+    $pdf->Ln(3);
+    $pdf->SetLineStyle(array('width' => 0.4, 'dash' => '2,2', 'color' => array(120, 120, 120)));
+    $pdf->Line(15, $pdf->GetY(), 195, $pdf->GetY());
+    $pdf->Ln(8);
+}
 
-$pdf->Cell(55, 6, '   Banque / Bank:', 0, 0, 'L');
-$pdf->SetFont('helvetica', 'B', 10);
-$pdf->Cell(0, 6, $virement['expediteur_nom_banque'], 0, 1, 'L');
+renderRow($pdf, 'Référence SWIFT / SWIFT Reference :', $virement['code_swift'] ?? 'N/A', true);
+renderRow($pdf, "Date d'émission / Issue date :", date('d/m/Y', strtotime($virement['date_creation'] ?? date('Y-m-d'))));
 
-$pdf->SetFont('helvetica', '', 10);
-$pdf->Cell(55, 6, '   BIC/SWIFT:', 0, 0, 'L');
-$pdf->SetFont('helvetica', 'B', 10);
-$pdf->Cell(0, 6, $virement['expediteur_bic'] ?? 'BKBCGB2L', 0, 1, 'L');
+renderSeparator($pdf);
 
-$pdf->SetFont('helvetica', '', 10);
-$pdf->Cell(55, 6, '   Adresse / Address:', 0, 0, 'L');
-$pdf->SetFont('helvetica', 'B', 10);
-$pdf->Cell(0, 6, $virement['expediteur_pays'], 0, 1, 'L');
+renderSectionTitle($pdf, 'Informations de la banque émettrice (Ordering Institution)');
+renderRow($pdf, 'Banque / Bank :', $virement['expediteur_nom_banque'] ?? 'N/A');
+renderRow($pdf, 'BIC/SWIFT :', $virement['expediteur_bic'] ?? 'N/A');
+renderRow($pdf, 'Adresse / Address :', $virement['expediteur_pays'] ?? 'N/A');
+renderRow($pdf, 'Compte débité / Debited account :', $virement['expediteur_numero_compte'] ?? 'N/A');
 
-$pdf->SetFont('helvetica', '', 10);
-$pdf->Cell(55, 6, '   Compte débité / Debited account:', 0, 0, 'L');
-$pdf->SetFont('helvetica', 'B', 10);
-$pdf->Cell(0, 6, $virement['expediteur_numero_compte'], 0, 1, 'L');
-$pdf->Ln(3);
+renderSeparator($pdf);
 
-// ==============================================
-// SECTION 2 - ORDONNATEUR
-// ==============================================
-$pdf->SetFont('helvetica', 'B', 11);
-$pdf->Cell(0, 6, '2. Informations de l\'ordonnateur (Ordering Customer)', 0, 1, 'L');
-$pdf->SetFont('helvetica', '', 10);
+renderSectionTitle($pdf, "Informations de l'ordonnateur (Ordering Customer)");
+renderRow($pdf, 'Nom / Name :', trim(($virement['expediteur_prenom'] ?? '') . ' ' . ($virement['expediteur_nom'] ?? '')) ?: 'N/A');
+renderRow($pdf, 'Adresse / Address :', $virement['expediteur_pays'] ?? 'N/A');
+renderRow($pdf, 'Compte / Account :', $virement['expediteur_numero_compte'] ?? 'N/A');
 
-$pdf->Cell(55, 6, '   Nom / Name:', 0, 0, 'L');
-$pdf->SetFont('helvetica', 'B', 10);
-$pdf->Cell(0, 6, $virement['expediteur_prenom'].' '.$virement['expediteur_nom'], 0, 1, 'L');
+renderSeparator($pdf);
 
-$pdf->SetFont('helvetica', '', 10);
-$pdf->Cell(55, 6, '   Adresse / Address:', 0, 0, 'L');
-$pdf->SetFont('helvetica', 'B', 10);
-$pdf->Cell(0, 6, $virement['expediteur_pays'], 0, 1, 'L');
+renderSectionTitle($pdf, 'Informations de la banque bénéficiaire (Beneficiary Bank)');
+renderRow($pdf, 'Banque / Bank :', $virement['destinataire_nom_banque'] ?? 'N/A');
+renderRow($pdf, 'BIC/SWIFT :', $virement['destinataire_bic'] ?? 'N/A');
+renderRow($pdf, 'Adresse / Address :', $virement['destinataire_pays'] ?? 'N/A');
 
-$pdf->SetFont('helvetica', '', 10);
-$pdf->Cell(55, 6, '   Compte / Account:', 0, 0, 'L');
-$pdf->SetFont('helvetica', 'B', 10);
-$pdf->Cell(0, 6, $virement['expediteur_numero_compte'], 0, 1, 'L');
-$pdf->Ln(3);
+renderSeparator($pdf);
 
-// ==============================================
-// SECTION 3 - BANQUE BÉNÉFICIAIRE
-// ==============================================
-$pdf->SetFont('helvetica', 'B', 11);
-$pdf->Cell(0, 6, '3. Informations de la banque bénéficiaire (Beneficiary Bank)', 0, 1, 'L');
-$pdf->SetFont('helvetica', '', 10);
+renderSectionTitle($pdf, 'Informations du bénéficiaire (Beneficiary Customer)');
+renderRow($pdf, 'Nom / Name :', trim(($virement['destinataire_prenom'] ?? '') . ' ' . ($virement['destinataire_nom'] ?? '')) ?: 'N/A');
+renderRow($pdf, 'Adresse / Address :', $virement['destinataire_pays'] ?? 'N/A');
+renderRow($pdf, 'Compte / Account :', $virement['destinataire_numero_compte'] ?? 'N/A');
 
-$pdf->Cell(55, 6, '   Banque / Bank:', 0, 0, 'L');
-$pdf->SetFont('helvetica', 'B', 10);
-$pdf->Cell(0, 6, $virement['destinataire_nom_banque'], 0, 1, 'L');
+renderSeparator($pdf);
 
-$pdf->SetFont('helvetica', '', 10);
-$pdf->Cell(55, 6, '   BIC/SWIFT:', 0, 0, 'L');
-$pdf->SetFont('helvetica', 'B', 10);
-$pdf->Cell(0, 6, $virement['destinataire_bic'] ?? 'UGABGALI', 0, 1, 'L');
+renderSectionTitle($pdf, 'Détails du paiement (Payment Details)');
+renderRow($pdf, 'Montant / Amount :', number_format($virement['montant'] ?? 0, 2, ',', ' ') . ' ' . ($virement['devise'] ?? 'USD'), true);
+renderRow($pdf, 'Devise / Currency :', $virement['devise'] ?? 'USD');
+renderRow($pdf, 'Date de valeur / Value date :', date('d/m/Y', strtotime($virement['date_creation'] ?? date('Y-m-d'))));
+renderRow($pdf, 'Motif du virement / Remittance Information :', $virement['motif_virement'] ?? ($virement['motif'] ?? 'N/A'));
 
-$pdf->SetFont('helvetica', '', 10);
-$pdf->Cell(55, 6, '   Adresse / Address:', 0, 0, 'L');
-$pdf->SetFont('helvetica', 'B', 10);
-$pdf->Cell(0, 6, $virement['destinataire_pays'], 0, 1, 'L');
-$pdf->Ln(3);
+renderSeparator($pdf);
 
-// ==============================================
-// SECTION 4 - BÉNÉFICIAIRE
-// ==============================================
-$pdf->SetFont('helvetica', 'B', 11);
-$pdf->Cell(0, 6, '4. Informations du bénéficiaire (Beneficiary Customer)', 0, 1, 'L');
-$pdf->SetFont('helvetica', '', 10);
+renderSectionTitle($pdf, 'Banques intermédiaires (Intermediary Institutions)');
+renderRow($pdf, 'Banque correspondante / Correspondent bank :', $virement['banque_correspondante'] ?? ($virement['expediteur_nom_banque'] ?? 'N/A'));
 
-$pdf->Cell(55, 6, '   Nom / Name:', 0, 0, 'L');
-$pdf->SetFont('helvetica', 'B', 10);
-$pdf->Cell(0, 6, $virement['destinataire_prenom'].' '.$virement['destinataire_nom'], 0, 1, 'L');
+$pdf->AddPage();
+renderPageHeader($pdf, $logo_file, $virement);
 
-$pdf->SetFont('helvetica', '', 10);
-$pdf->Cell(55, 6, '   Adresse / Address:', 0, 0, 'L');
-$pdf->SetFont('helvetica', 'B', 10);
-$pdf->Cell(0, 6, $virement['destinataire_pays'], 0, 1, 'L');
-
-$pdf->SetFont('helvetica', '', 10);
-$pdf->Cell(55, 6, '   Compte / Account:', 0, 0, 'L');
-$pdf->SetFont('helvetica', 'B', 10);
-$pdf->Cell(0, 6, $virement['destinataire_numero_compte'], 0, 1, 'L');
-$pdf->Ln(3);
-
-// ==============================================
-// SECTION 5 - DÉTAILS DU PAIEMENT
-// ==============================================
-$pdf->SetFont('helvetica', 'B', 11);
-$pdf->Cell(0, 6, '5. Détails du paiement (Payment Details)', 0, 1, 'L');
-$pdf->SetFont('helvetica', '', 10);
-
-$pdf->Cell(55, 6, '   Montant / Amount:', 0, 0, 'L');
-$pdf->SetFont('helvetica', 'B', 10);
-$pdf->Cell(0, 6, number_format($virement['montant'], 2, ',', ' ').' '.$virement['devise'], 0, 1, 'L');
-
-$pdf->SetFont('helvetica', '', 10);
-$pdf->Cell(55, 6, '   Devise / Currency:', 0, 0, 'L');
-$pdf->SetFont('helvetica', 'B', 10);
-$pdf->Cell(0, 6, $virement['devise'], 0, 1, 'L');
-
-$pdf->SetFont('helvetica', '', 10);
-$pdf->Cell(55, 6, '   Date de valeur / Value date:', 0, 0, 'L');
-$pdf->SetFont('helvetica', 'B', 10);
-$pdf->Cell(0, 6, date('d/m/Y', strtotime($virement['date_creation'])), 0, 1, 'L');
-
-// ✅ SUPPRESSION DE LA LIGNE "Motif du virement"
-// Plus rien n'est affiché ici
-
+$pdf->SetFont('helvetica', 'B', 12);
+$pdf->Cell(0, 6, 'Résumé du suivi / Tracking Summary', 0, 1, 'L');
 $pdf->Ln(2);
 
-// ==============================================
-// SECTION 6 - BANQUES INTERMÉDIAIRES
-// ==============================================
-$pdf->SetFont('helvetica', 'B', 11);
-$pdf->Cell(0, 6, '6. Banques intermédiaires (Intermediary Institutions)', 0, 1, 'L');
 $pdf->SetFont('helvetica', '', 10);
-
-$pdf->Cell(55, 6, '   Banque correspondante /', 0, 1, 'L');
-$pdf->SetX(70);
-$pdf->Cell(0, 6, 'Correspondent bank:', 0, 1, 'L');
-$pdf->SetX(70);
+$pdf->Cell(70, 6, 'Code de suivi (UTR / TRN) / Tracking code :', 0, 0, 'L');
+$pdf->SetFillColor(255, 243, 169);
 $pdf->SetFont('helvetica', 'B', 10);
-$pdf->Cell(0, 6, $virement['expediteur_nom_banque'], 0, 1, 'L');
+$pdf->Cell(0, 6, $virement['code_swift'] ?? 'N/A', 0, 1, 'L', 1);
+
+$pdf->Ln(2);
+$pdf->SetFont('helvetica', '', 10);
+$pdf->MultiCell(0, 6, 'Ce code est utilisé pour tracer le virement à chaque étape entre les banques via le réseau SWIFT. / This code is used to track the transfer at each step between banks via the SWIFT network.', 0, 'L', 0, 1);
+
+$pdf->Ln(6);
+$pdf->SetDrawColor(0, 102, 204);
+$pdf->SetFillColor(235, 242, 255);
+$pdf->SetLineWidth(0.4);
+$pdf->MultiCell(0, 8, 'ACTION REQUISE / ACTION REQUIRED', 1, 'L', 1, 1, '', '', true);
+
+$pdf->SetFillColor(255, 255, 255);
+$pdf->MultiCell(0, 18, 'Le bénéficiaire doit confirmer la réception des fonds avec la référence SWIFT ci-dessous. / The beneficiary must confirm receipt of funds using the SWIFT reference below.', 1, 'L', 0, 1, '', '', true);
+
+$pdf->SetFillColor(255, 243, 169);
+$pdf->SetFont('helvetica', 'B', 10);
+$pdf->MultiCell(0, 8, $virement['code_swift'] ?? 'N/A', 1, 'L', 1, 1, '', '', true);
+
+$pdf->SetFillColor(224, 236, 255);
+$pdf->SetTextColor(0, 50, 120);
+$pdf->SetFont('helvetica', 'B', 11);
+$pdf->MultiCell(0, 10, 'Autoriser la réception des fonds / Authorize receipt of funds', 1, 'C', 1, 1, '', '', true);
+
+$pdf->SetFont('helvetica', '', 10);
+$pdf->SetTextColor(0, 102, 204);
+$pdf->Cell(0, 6, 'Cliquez ici pour valider la transaction', 0, 1, 'C', 0, 'http://localhost/ubs/verification.php');
+
 $pdf->Ln(3);
+$pdf->SetFont('helvetica', 'I', 9);
+$pdf->SetTextColor(100, 100, 100);
+$pdf->MultiCell(0, 5, 'Ce document est généré pour usage professionnel. Veuillez conserver une copie pour vos archives.', 0, 'L', 0, 1);
 
-// Le message de statut n'est pas affiché dans le PDF téléchargé.
-
-// Générer le PDF
-$pdf->Output('ordre_virement_'.$virement['id'].'_'.date('Ymd').'.pdf', 'D');
+$pdf->Output('ordre_virement_' . ($virement['id'] ?? '0') . '_' . date('Ymd') . '.pdf', 'D');
 exit;
-?>

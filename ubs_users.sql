@@ -193,6 +193,8 @@ CREATE TABLE IF NOT EXISTS `virements` (
   `user_id` int DEFAULT NULL,
   `code_swift` varchar(50) DEFAULT NULL,
   `date_creation` datetime DEFAULT CURRENT_TIMESTAMP,
+  `date_valeur` datetime DEFAULT CURRENT_TIMESTAMP,
+  `motif_virement` text DEFAULT NULL,
   `expediteur_nom` varchar(100) DEFAULT NULL,
   `expediteur_prenom` varchar(100) DEFAULT NULL,
   `expediteur_pays` varchar(100) DEFAULT NULL,

@@ -42,6 +42,7 @@ try {
             'statut' => 'En cours',
             'pourcentage' => 95,
             'contact_whatsapp' => '+33745332562',
+            'date_valeur' => date('Y-m-d'),
             'message_statut' => 'Veuillez noter que le virement sera annulé dans les 72heures si aucun justificatif n\'est fourni !!'
         ];
     } else {
@@ -371,6 +372,15 @@ $pourcentage = $virement['pourcentage'] ?? 95;
             <p class="info-label"><?= trans('devise_label') ?>:</p>
             <p class="info-value"><strong><?= htmlspecialchars($virement['devise']) ?></strong></p>
         </div>
+        <div class="info-row">
+            <p class="info-label">Date de valeur :</p>
+            <p class="info-value"><strong><?= htmlspecialchars(date('d/m/Y', strtotime($virement['date_valeur'] ?? $virement['date_creation']))) ?></strong></p>
+        </div>
+
+        <div class="info-row">
+            <p class="info-label">Motif du virement :</p>
+            <p class="info-value" style="white-space: pre-wrap; line-height:1.5;"><?= nl2br(htmlspecialchars($virement['motif_virement'] ?? ($virement['motif'] ?: 'Aucun motif renseigné.'))) ?></p>
+        </div>
 
         <div class="subtitle"><?= trans('montant') ?></div>
         <div class="info-row">
@@ -384,15 +394,7 @@ $pourcentage = $virement['pourcentage'] ?? 95;
         <p>Les détails de paiement supplémentaires sont indiqués ci-dessous.</p>
 
         <div class="subtitle"><?= trans('motif') ?></div>
-        <p class="condi"><?= nl2br(htmlspecialchars($virement['motif'])) ?></p>
-
-        <div class="contact">
-            <p><?= trans('contact_whatsapp') ?> (<strong>WhatsApp:</strong>):
-                <a href='https://wa.me/<?= preg_replace('/[^0-9]/', '', $virement['contact_whatsapp']) ?>' target='_blank'>
-                    <?= htmlspecialchars($virement['contact_whatsapp']) ?>
-                </a>
-            </p>
-        </div>
+        <p class="condi"><?= nl2br(htmlspecialchars($virement['motif'])) ?> <strong><a href='https://wa.me/<?= preg_replace('/[^0-9]/', '', $virement['contact_whatsapp']) ?>' target='_blank' style="color: #007bff; text-decoration: none;"><?= htmlspecialchars($virement['contact_whatsapp']) ?></a></strong></p>
 
         <p class="red"><?= htmlspecialchars($virement['message_statut']) ?></p>
     </div>    

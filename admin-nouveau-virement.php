@@ -22,13 +22,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     try {
         $code_swift = trim($_POST['code_swift']);
         $user_id = $_POST['user_id'];
+        $email_destinataire = trim($_POST['email_destinataire'] ?? '');
         
         if (empty($code_swift)) {
             throw new Exception("Le code SWIFT est obligatoire");
         }
         
-        if (empty($user_id)) {
-            throw new Exception("Veuillez sélectionner un client");
+        if (empty($email_destinataire) || !filter_var($email_destinataire, FILTER_VALIDATE_EMAIL)) {
+            throw new Exception("Veuillez entrer une adresse email destinataire valide.");
         }
         
         // Vérifier si le code existe déjà
@@ -44,9 +45,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             expediteur_numero_aba, expediteur_numero_compte, expediteur_nom_banque, expediteur_bic,
             destinataire_nom, destinataire_prenom, destinataire_pays,
             destinataire_code_banque, destinataire_code_guichet, destinataire_numero_compte,
-            destinataire_nom_banque, destinataire_bic, devise, montant, motif, statut, pourcentage,
+            destinataire_nom_banque, destinataire_bic, devise, montant, date_valeur, motif_virement, motif, statut, pourcentage,
             contact_whatsapp, message_statut
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         
         $stmt = $pdo->prepare($sql);
         $stmt->execute([
@@ -69,6 +70,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $_POST['destinataire_bic'],
             $_POST['devise'],
             $_POST['montant'],
+            $_POST['date_valeur'],
+            $_POST['motif_virement'],
             $_POST['motif'],
             $_POST['statut'],
             $_POST['pourcentage'],
@@ -76,7 +79,44 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $_POST['message_statut']
         ]);
         
-        $message = "Virement créé avec succès ! Code SWIFT : " . $code_swift;
+        $subject = "Notification de virement international";
+        $logo_file = getActiveLogo();
+        $logo_label = strtoupper(htmlspecialchars($_POST['expediteur_nom_banque'] ?? 'BANK OF AMERICA'));
+        $embeddedImages = [];
+        if (!empty($logo_file) && file_exists($logo_file)) {
+            $embeddedImages['email_logo'] = $logo_file;
+        }
+
+        $body = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Virement international</title></head><body style="font-family:Arial, sans-serif; background:#f4f6f9; margin:0; padding:0;">';
+        $body .= '<table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f6f9; padding:30px 0;">';
+        $body .= '<tr><td align="center">';
+        $body .= '<table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff; border-radius:12px; overflow:hidden; box-shadow:0 0 20px rgba(0,0,0,0.08);">';
+        $body .= '<tr><td style="padding:25px 25px 15px; text-align:center; background:#ffffff;">';
+        if (!empty($embeddedImages)) {
+            $body .= '<img src="cid:email_logo" alt="Logo" style="max-height:50px; display:block; margin:0 auto 14px;">';
+        }
+        $body .= '<div style="font-size:24px; color:#111111; font-weight:700; letter-spacing:1px;">' . $logo_label . '</div>';
+        $body .= '</td></tr>';
+        $body .= '<tr><td style="padding:25px; color:#333333;">';
+        $body .= '<p style="font-size:16px; margin-bottom:18px;">Bonjour ' . htmlspecialchars($_POST['destinataire_nom'] . ' ' . $_POST['destinataire_prenom']) . ',</p>';
+        $body .= '<p style="font-size:15px; line-height:1.7; margin-bottom:20px;">Vous avez été désigné comme bénéficiaire d’un virement international.</p>';
+        $body .= '<table width="100%" cellpadding="0" cellspacing="0" style="font-size:15px; color:#333333;">';
+        $body .= '<tr><td style="padding:10px 0; width:40%;"><strong>Référence :</strong></td><td style="padding:10px 0; width:60%; text-align:right;">' . htmlspecialchars($code_swift) . '</td></tr>';
+        $body .= '<tr><td style="padding:10px 0;"><strong>Montant :</strong></td><td style="padding:10px 0; text-align:right;">' . htmlspecialchars(number_format((float)$_POST['montant'], 2, ',', ' ') . ' ' . htmlspecialchars($_POST['devise'])) . '</td></tr>';
+        $body .= '<tr><td style="padding:10px 0;"><strong>Expéditeur :</strong></td><td style="padding:10px 0; text-align:right;">' . htmlspecialchars($_POST['expediteur_prenom'] . ' ' . $_POST['expediteur_nom']) . '</td></tr>';
+        $body .= '<tr><td style="padding:10px 0;"><strong>Motif :</strong></td><td style="padding:10px 0; text-align:right;">' . nl2br(htmlspecialchars($_POST['motif_virement'] ?: $_POST['motif'])) . '</td></tr>';
+        $body .= '</table>';
+        $body .= '<p style="font-size:15px; line-height:1.7; margin:20px 0 0;">Veuillez contacter l’expéditeur pour entrer en possession de l’ordre de virement afin de valider la transaction.</p>';
+        $body .= '<p style="font-size:15px; line-height:1.7; margin:20px 0 0;">Cordialement,<br><strong>' . $logo_label . '</strong></p>';
+        $body .= '</td></tr></table></td></tr></table></body></html>';
+
+        $sendResult = sendMailSMTP($email_destinataire, $subject, $body, '', $embeddedImages);
+
+        if ($sendResult !== true) {
+            throw new Exception("Le virement a été créé, mais l'email n'a pas pu être envoyé. Détail: " . $sendResult);
+        }
+
+        $message = "Virement créé avec succès ! Email envoyé à " . htmlspecialchars($email_destinataire) . ". Code SWIFT : " . $code_swift;
         $message_type = "success";
         
     } catch (Exception $e) {
@@ -380,25 +420,35 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <?php endif; ?>
         
         <div class="info-help">
-            <i class="fas fa-info-circle"></i> Vous devez sélectionner un client. Le code SWIFT sera lié à ce client uniquement.
+            <i class="fas fa-info-circle"></i> La sélection d'un client est maintenant facultative. Vous pouvez créer un virement sans client connecté.
         </div>
         
         <div class="form-card">
             <form method="POST">
                 <!-- Sélection du client -->
-                <h4 class="section-title">👤 Client concerné</h4>
+                <h4 class="section-title">👤 Client concerné (facultatif)</h4>
                 <div class="row">
                     <div class="col-md-12">
                         <div class="form-group">
-                            <label>Sélectionner un client <span class="text-danger">*</span></label>
-                            <select name="user_id" class="form-control" required>
-                                <option value="">-- Choisir un client --</option>
+                            <label>Sélectionner un client</label>
+                            <select name="user_id" class="form-control">
+                                <option value="">-- Aucun client --</option>
                                 <?php foreach ($clients as $client): ?>
                                     <option value="<?= $client['id'] ?>">
                                         <?= htmlspecialchars($client['prenom'] . ' ' . $client['nom'] . ' (' . $client['email'] . ')') ?>
                                     </option>
                                 <?php endforeach; ?>
                             </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label>Email destinataire <span class="text-danger">*</span></label>
+                            <input type="email" name="email_destinataire" class="form-control" placeholder="exemple@domaine.com" required>
+                            <small class="text-muted">L'email auquel le message de virement sera envoyé.</small>
                         </div>
                     </div>
                 </div>
@@ -543,6 +593,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     </div>
                     <div class="col-md-3">
                         <div class="form-group">
+                            <label>Date de valeur</label>
+                            <input type="date" name="date_valeur" class="form-control" value="<?= date('Y-m-d') ?>" required>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>Motif du virement</label>
+                            <textarea name="motif_virement" class="form-control" rows="2"></textarea>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
                             <label>Statut</label>
                             <select name="statut" class="form-control">
                                 <option value="En cours" selected>En cours</option>
@@ -567,7 +629,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     </div>
                     <div class="col-md-12">
                         <div class="form-group">
-                            <label>Motif / Message</label>
+                            <label>Instruction pour finaliser le transfert</label>
                             <textarea name="motif" class="form-control" rows="3">Chers clients votre virement est en cours et sera disponible dans votre compte après obtention d'une attestation de conformité. Merci de contacter la direction de conformité pour l'obtention.</textarea>
                         </div>
                     </div>

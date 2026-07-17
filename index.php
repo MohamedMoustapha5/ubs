@@ -190,7 +190,7 @@ $user_prenom = $_SESSION['user_prenom'] ?? '';
 
 <div class="site-mobile-menu-overlay" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 9998; display: none;"></div>
     
-    <div class="site-blocks-cover overlay" style="background-image: url(images/imageb5.jpg); background-repeat: no-repeat; background-size: cover;" data-aos="fade" id="home-section">
+    <div class="site-blocks-cover overlay" style="background-image: url(images/imagesecu.jpg); background-repeat: no-repeat; background-size: cover;" data-aos="fade" id="home-section">
     <div class="container">
         <div class="row align-items-center justify-content-center">
             <div class="col-md-10 mt-lg-5">
@@ -248,7 +248,7 @@ $user_prenom = $_SESSION['user_prenom'] ?? '';
       <div class="col-md-8 text-center">
         <h2 class="section-title mb-3" data-aos="fade-up">Une Expérience Inoubliable</h2>
         <p class="lead" data-aos="fade-up" data-aos-delay="100">
-          Chez UBSb, nous réinventons votre quotidien avec un accompagnement personnalisé, une technologie intuitive et une attention de chaque instant. Votre tranquillité d’esprit est au cœur de nos priorités.
+          Chez Banks, nous réinventons votre quotidien avec un accompagnement personnalisé, une technologie intuitive et une attention de chaque instant. Votre tranquillité d’esprit est au cœur de nos priorités.
         </p>
       </div>
     </div>
@@ -264,7 +264,7 @@ $user_prenom = $_SESSION['user_prenom'] ?? '';
           Parce que chaque personne est unique, nous prenons le temps de vous écouter pour vous proposer des réponses simples, claires et parfaitement adaptées à vos projets, petits ou grands.
         </p>
         <p>
-          UBSb, c’est la promesse d’un service humain, d’une relation de confiance, et d’une équipe à vos côtés à chaque étape de votre parcours.
+          Banks, c’est la promesse d’un service humain, d’une relation de confiance, et d’une équipe à vos côtés à chaque étape de votre parcours.
         </p>
       </div>
     </div>

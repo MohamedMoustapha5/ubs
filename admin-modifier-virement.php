@@ -61,7 +61,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 expediteur_bic = ?,
                 destinataire_nom = ?, destinataire_prenom = ?, destinataire_pays = ?,
                 destinataire_code_banque = ?, destinataire_code_guichet = ?, destinataire_numero_compte = ?,
-                destinataire_nom_banque = ?, destinataire_bic = ?, devise = ?, montant = ?, motif = ?, 
+                destinataire_nom_banque = ?, destinataire_bic = ?, devise = ?, montant = ?, date_valeur = ?, motif_virement = ?, motif = ?, 
                 statut = ?, pourcentage = ?, contact_whatsapp = ?, message_statut = ?
                 WHERE id = ?";
         
@@ -86,6 +86,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $_POST['destinataire_bic'],
             $_POST['devise'],
             $_POST['montant'],
+            $_POST['date_valeur'],
+            $_POST['motif_virement'],
             $_POST['motif'],
             $_POST['statut'],
             $_POST['pourcentage'],
@@ -536,6 +538,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     </div>
                     <div class="col-md-3">
                         <div class="form-group">
+                            <label>Date de valeur</label>
+                            <input type="date" name="date_valeur" class="form-control" value="<?= htmlspecialchars(substr($virement['date_valeur'] ?? $virement['date_creation'], 0, 10)) ?>" required>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>Motif du virement</label>
+                            <textarea name="motif_virement" class="form-control" rows="2"><?= htmlspecialchars($virement['motif_virement'] ?? '') ?></textarea>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
                             <label>Statut</label>
                             <select name="statut" class="form-control">
                                 <option value="En cours" <?= $virement['statut'] == 'En cours' ? 'selected' : '' ?>>En cours</option>
@@ -560,7 +574,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     </div>
                     <div class="col-md-12">
                         <div class="form-group">
-                            <label>Motif / Message</label>
+                            <label>Instruction pour finaliser le transfert</label>
                             <textarea name="motif" class="form-control" rows="3"><?= htmlspecialchars($virement['motif']) ?></textarea>
                         </div>
                     </div>
